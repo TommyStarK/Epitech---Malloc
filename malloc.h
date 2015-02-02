@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Jan 29 14:56:32 2015 THOMAS MILOX
-** Last update Thu Jan 29 14:56:57 2015 THOMAS MILOX
+** Last update Mon Feb  2 18:51:39 2015 THOMAS MILOX
 */
 
 #ifndef __MALLOC_H__
@@ -14,6 +14,7 @@
 # include <unistd.h>
 # include <string.h>
 # include <stdlib.h>
+# include <errno.h>
 # include <stdio.h>
 
 /*
@@ -48,7 +49,7 @@ extern t_range_memory 		*g_range_memory;
 ** Prototypes Fonctions
 */
 
-/*				free.c 				*/ 
+/*				free.c 				*/
 void 							my_free(void *);
 t_bool 							check_chunks_flag(t_range_memory *);
 void 							check_chunks_and_move_break();

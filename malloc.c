@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Jan 29 14:57:01 2015 THOMAS MILOX
-** Last update Thu Jan 29 14:57:16 2015 THOMAS MILOX
+** Last update Mon Feb  2 18:51:01 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
@@ -36,7 +36,7 @@ int 						check_in_free_chunks(void *new_range_memory, size_t size, int _padding
 			if (!tmp->flag && tmp->size > size)
 				{
 					tmp = (t_range_memory *)(new_range_memory + size);
-					tmp->address = new_range_memory; 
+					tmp->address = new_range_memory;
 					tmp->size = size;
 					tmp->flag = 1;
 					tmp->padding = _padding;
@@ -76,7 +76,10 @@ int 						alloc_mem_with_padding(void **new_range_memory, size_t size)
 	while ((size + sizeof(t_range_memory) + _padding) % 8 != 0)
 		_padding++;
 	if ((*new_range_memory = sbrk(size + sizeof(t_range_memory) + _padding)) == (void *)-1)
-		return -1;
+	  {
+	    perror("AAAAAAAAAAAAAAAAA");
+	    return -1;
+	  }
 	return _padding;
 }
 
