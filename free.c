@@ -10,6 +10,10 @@
 
 #include "malloc.h"
 
+/*
+** Show_alloc_mem()
+*/
+
 void 						show_alloc_mem()
 {
 	size_t 					max_size;
@@ -32,6 +36,10 @@ void 						show_alloc_mem()
 	}
 }
 
+/*
+** Fonctions pour Free
+*/
+
 t_bool 				check_chunks_flag(t_range_memory *chunk)
 {
 	t_range_memory 	*tmp;
@@ -39,7 +47,7 @@ t_bool 				check_chunks_flag(t_range_memory *chunk)
 	tmp = chunk;
 	while (tmp)
 		{
-			if (tmp->flag)
+			if (tmp->flag == 1)
 				return FALSE;
 			tmp = tmp->next;
 		}
@@ -62,8 +70,7 @@ void 				check_chunks_and_move_break()
 		{	
 			clean = tmp;
 			tmp->flag = 0;
-			bzero((void *)(tmp->address + tmp->size), 
-				(tmp->padding + sizeof(t_range_memory)));
+			bzero((void *)(tmp->address + tmp->size), STRUCT_SIZE);
 			tmp = tmp->next;
 			clean->prev = NULL;
 			clean->next = NULL;
@@ -80,6 +87,8 @@ void 				my_free(void *ptr)
 	if (!g_range_memory->next)
 		{
 			bzero(g_range_memory->address, g_range_memory->size);
+			bzero((void *)(g_range_memory->address + g_range_memory->size), 
+							STRUCT_SIZE);
 			if (brk(g_range_memory->address) == -1)
 				return;
 			g_range_memory = NULL;

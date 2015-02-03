@@ -18,6 +18,8 @@
 # include <stdio.h>
 
 # define ALIGNMENT 				(4)
+# define STRUCT_SIZE 			(sizeof(struct s_range_memory))
+
 /*
 ** Structures
 */

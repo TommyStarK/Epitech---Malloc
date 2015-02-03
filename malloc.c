@@ -31,7 +31,7 @@ int 						check_in_free_chunks(void *new_range_memory, size_t size)
 	t_range_memory 			*tmp;
 
 	tmp = g_range_memory;
-	while (tmp)
+	while (tmp && tmp->next)
 		{
 			if (!tmp->flag && tmp->size > size)
 				{
@@ -75,7 +75,7 @@ void 						*my_malloc(size_t size)
 	if (!size)
 		return NULL;
 	_size = align_size_4(size);
-	if ((new_range_memory = sbrk(size + sizeof(t_range_memory))) == (void *)-1)
+	if ((new_range_memory = sbrk(size + STRUCT_SIZE)) == (void *)-1)
 		return NULL;
 	if (!g_range_memory)
 		{
