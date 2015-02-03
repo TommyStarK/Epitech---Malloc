@@ -71,7 +71,7 @@ void 						*my_malloc(size_t size)
 	size_t 					_size;
 	void 					*new_range_memory;
 
-	new_range_memory = NULL;
+	new_range_memory = sbrk(0);
 	if (!size)
 		return NULL;
 	_size = align_size_4(size);
