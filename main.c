@@ -8,6 +8,7 @@ int main()
   char		*fdp = NULL;
 
   int i = 0;
+  printf("\n############################################################\n\n");
   while (i < 50)
     {
       printf("addr n° %d = %p\n", i, (my_malloc(1000000000)));

@@ -17,6 +17,7 @@
 # include <errno.h>
 # include <stdio.h>
 
+# define ALIGNMENT 				(4)
 /*
 ** Structures
 */
@@ -57,7 +58,6 @@ void 							show_alloc_mem();
 /* 				malloc.c 			*/
 void 							*my_malloc(size_t);
 size_t 							align_size_4(size_t);
-void 							add_new_range_memory(void *, size_t, int);
-int 							Scheck_in_free_chunks(void *, size_t, int);
-int 							alloc_mem_with_padding(void **, size_t);
+void 							add_new_range_memory(void *, size_t);
+int 							Scheck_in_free_chunks(void *, size_t);
 #endif /* ! __MALLOC_H__ */
