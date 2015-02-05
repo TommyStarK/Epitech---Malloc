@@ -8,3 +8,5 @@
 ** Last update Thu Feb  5 14:41:10 2015 THOMAS MILOX
 */
 
+#include "malloc.h"
+
