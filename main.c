@@ -8,6 +8,7 @@ int main()
   char		*fdp = NULL;
 
   int i = 0;
+  pthread_mutex_init(&mutex, NULL);
   printf("\n############################################################\n\n");
   while (i < 50)
     {
@@ -16,7 +17,7 @@ int main()
     }
   i = 0;
   s = my_malloc(50);
-  printf("\n        MAIN~START\n\n");
+  printf("\n        MAIN~;START\n\n");
   printf("Malloc %d: %p\n", i++, s);
   test = my_malloc(2500);
   printf("Malloc %d: %p\n", i++, test);
@@ -33,5 +34,6 @@ int main()
   show_alloc_mem();
   printf("\n###########################################################\n\n");
   printf("\n        MAIN~END\n\n");
+  pthread_mutex_destroy(&mutex);
   return 0;
 }

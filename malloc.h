@@ -14,7 +14,7 @@
 # include <unistd.h>
 # include <string.h>
 # include <stdlib.h>
-# include <errno.h>
+# include <pthread.h>
 # include <stdio.h>
 
 # define ALIGNMENT 				(4)
@@ -47,7 +47,7 @@ enum t_bool
 */
 
 extern t_range_memory 		*g_range_memory;
-
+extern pthread_mutex_t 		mutex;
 /*
 ** Prototypes Fonctions
 */

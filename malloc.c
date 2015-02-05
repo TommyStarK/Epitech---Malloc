@@ -10,9 +10,17 @@
 
 #include "malloc.h"
 
+/* ptr sur liste => attrib  X pages de get_page_size()  
+**
+** A chaque malloc on ajoute un nouvel elem de size octets et l'elem suivant aura pour taille = (X * get_page_size) - size;
+**
+** 
+**
+*/
+
 
 t_range_memory 				*g_range_memory = NULL;
-
+pthread_mutex_t 			mutex = PTHREAD_MUTEX_INITIALIZER;
 /*
 **
 */
@@ -71,7 +79,9 @@ void 						*my_malloc(size_t size)
 	size_t 					_size;
 	void 					*new_range_memory;
 
-	new_range_memory = sbrk(0);
+	pthread_mutex_lock(&mutex);
+	if ((new_range_memory = sbrk(0)) == (void *)-1)
+		return NULL;
 	if (!size)
 		return NULL;
 	_size = align_size_4(size);
@@ -88,5 +98,6 @@ void 						*my_malloc(size_t size)
 		}
 	else
 		add_new_range_memory(new_range_memory, _size);
+	pthread_mutex_unlock(&mutex);
 	return (new_range_memory);
 }
