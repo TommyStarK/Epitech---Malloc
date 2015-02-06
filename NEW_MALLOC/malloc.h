@@ -30,6 +30,7 @@ typedef struct 				s_memory_chunk
 {
 	char 					_free;
 	void 					*address;
+	void 					*_break;
 	size_t 					size;
 	uint64_t 				map_size;
 	uint64_t 				magic_nbr;
