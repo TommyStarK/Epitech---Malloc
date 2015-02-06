@@ -30,12 +30,17 @@ void 						*resize_memory_map(size_t size)
       tmp = tmp->next;
     }
   check += (tmp->size + HEADER_SIZE);
+  printf("check : %lu  map_size : %lu\n", check, g_memory_map->map_size);
   while ((size + HEADER_SIZE + check) >= g_memory_map->map_size)
     g_memory_map->map_size += MAP_SIZE;
+  printf("new g_memory_map_size : [%lu]\n", g_memory_map->map_size);
   if (sbrk(g_memory_map->map_size) == (void *)-1)
-    return (NULL);
-  tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
-  (tmp->next)->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
+    {
+      printf("TEEEEEEEEEEEEEEESSSSSSSSSSSST     22222\n");
+      return (NULL);
+    }
+  tmp->next = (t_memory_chunk *)(((void *)tmp->address) + tmp->size);
+  (tmp->next)->address = (((void *)tmp->address) + tmp->size + HEADER_SIZE);
   (tmp->next)->size = size;
   (tmp->next)->_free = 0;
   (tmp->next)->map_size = g_memory_map->map_size;
@@ -55,7 +60,7 @@ void 						*split_memory_chunk(t_memory_chunk *tmp, size_t size)
   bckp = tmp->size;
   tmp->size = size;
   _new = (t_memory_chunk *)(tmp + tmp->size + HEADER_SIZE);
-  _new->address = (void *)(_new + HEADER_SIZE);
+  _new->address = (((void *)_new) + HEADER_SIZE);
   _new->size = bckp - size;
   _new->_free = 0;
   _new->map_size = g_memory_map->map_size;
@@ -65,13 +70,13 @@ void 						*split_memory_chunk(t_memory_chunk *tmp, size_t size)
   tmp->next->prev  = _new;
   tmp->next = _new;
   pthread_mutex_unlock(&mutex);
-  return (tmp->next->address);
+  return ((tmp->next)->address);
 }
 
 void 						*set_new_block_memory(size_t size)
 {
   size_t 					check;
-  t_memory_chunk 			*tmp;
+  t_memory_chunk 	*tmp;
 
   tmp = g_memory_map;
   check = 0;
@@ -84,7 +89,7 @@ void 						*set_new_block_memory(size_t size)
   if (g_memory_map->map_size <= (check + size + HEADER_SIZE))
     return (resize_memory_map(size));
   tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
-  (tmp->next)->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
+  (tmp->next)->address = (((void *)tmp->address) + tmp->size + HEADER_SIZE);
   (tmp->next)->size = size;
   (tmp->next)->_free = 0;
   (tmp->next)->map_size = g_memory_map->map_size;
@@ -99,7 +104,7 @@ void 						*set_new_block_memory(size_t size)
 void 						*add_new_chunk_memory(size_t size)
 {
   size_t 					check;
-  t_memory_chunk 			*tmp;
+  t_memory_chunk 	*tmp;
 
   check = 0;
   tmp = g_memory_map;
@@ -110,7 +115,10 @@ void 						*add_new_chunk_memory(size_t size)
     }
   check += tmp->size + HEADER_SIZE;
   if ((check + size + HEADER_SIZE) >= g_memory_map->map_size)
+    {
+    printf("TEEEEEEEEEEEEEEESSSSSSSSSSSST   111111\n");
     return (resize_memory_map(size));
+    }
   return (set_new_block_memory(size));
 }
 
