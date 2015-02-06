@@ -8,7 +8,8 @@ int main()
   char		*test = NULL;
   char		*fdp = NULL;
 
-  printf("########## %p\n", (my_malloc(1000000)));
+  my_malloc(1000000);
+  show_alloc_mem();
   int i = 0;
   printf("\n############################################################\n\n");
   while (i < 50)
