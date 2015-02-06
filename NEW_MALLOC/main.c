@@ -8,11 +8,12 @@ int main()
   char		*test = NULL;
   char		*fdp = NULL;
 
+  printf("########## %p\n", (my_malloc(1000000)));
   int i = 0;
   printf("\n############################################################\n\n");
   while (i < 50)
     {
-      printf("addr n° %d = %p\n", i, (my_malloc(10000)));
+      printf("addr n° %d = %p\n", i, (my_malloc(100000)));
       ++i;
     }
   i = 0;

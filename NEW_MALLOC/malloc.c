@@ -42,7 +42,6 @@ void                        show_alloc_mem()
 void 						*resize_memory_map(size_t size)
 {
 	t_memory_chunk 			*tmp;
-	t_memory_chunk 			*new_block_map;
 
 	tmp = g_memory_map;
 	while (tmp && tmp->next)
@@ -50,29 +49,21 @@ void 						*resize_memory_map(size_t size)
 	while (size >= g_memory_map->map_size)
 	{
 		if (sbrk(MAP_SIZE) == (void *)-1)
-			return NULL;		
+			return (NULL);		
 		g_memory_map->map_size += MAP_SIZE;
 	}
-	printf("%i\n", g_memory_map->map_size);
-	new_block_map = (t_memory_chunk *)(tmp->address + tmp->size);
-	new_block_map->address = (void *)(new_block_map + HEADER_SIZE);
-	new_block_map->size = size;
-	new_block_map->map_size = g_memory_map->map_size;
-	new_block_map->magic_nbr = 1123581321;
-	new_block_map->next = NULL;
-	new_block_map->prev = tmp;
-	new_block_map->next = new_block_map;
-	// tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
-	// tmp->next->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
-	// tmp->next->size = size;
-	// tmp->next->map_size = g_memory_map->map_size;
-	// tmp->next->magic_nbr = 1123581321;
-	// tmp->next->next = NULL;
-	// tmp->next->prev = tmp;
+	tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
+	tmp->next->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
+	tmp->next->size = size;
+	tmp->next->_free = 0;
+	tmp->next->map_size = g_memory_map->map_size;
+	tmp->next->magic_nbr = 1123581321;
+	tmp->next->next = NULL;
+	tmp->next->prev = tmp;
 	pthread_mutex_unlock(&mutex);
-	return (new_block_map->address);
+	return (tmp->next->address);
 }
-
+ 
 void 						*split_memory_chunk(t_memory_chunk *tmp, size_t size)
 {
 	size_t 					bckp;
@@ -82,9 +73,10 @@ void 						*split_memory_chunk(t_memory_chunk *tmp, size_t size)
 	tmp->size = size;
 	_new = (t_memory_chunk *)(tmp + tmp->size + HEADER_SIZE);
 	_new->address = (void *)(_new + HEADER_SIZE);
+	_new->size = bckp - size;
+	_new->_free = 0;
 	_new->map_size = g_memory_map->map_size;
 	_new->magic_nbr = 1123581321;
-	_new->size = bckp - size;
 	_new->next = tmp->next;
 	_new->prev = tmp;
 	tmp->next->prev  = _new;
@@ -107,6 +99,7 @@ void 						*set_new_block_memory(size_t size)
 	tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
 	tmp->next->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
 	tmp->next->size = size;
+	tmp->next->_free = 0;
 	tmp->next->map_size = g_memory_map->map_size;
 	tmp->next->magic_nbr = 1123581321;
 	tmp->next->next = NULL;
@@ -151,7 +144,7 @@ void 						*init_memory_map(size_t size)
 	g_memory_map->address = (void *)(g_memory_map + HEADER_SIZE);
 	g_memory_map->size = size;
 	g_memory_map->_free = 0;
-	g_memory_map->map_size = MAP_SIZE;
+	g_memory_map->map_size = ret;
 	g_memory_map->magic_nbr = 1123581321;
 	g_memory_map->next = NULL;
 	g_memory_map->prev = NULL;
