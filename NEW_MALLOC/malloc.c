@@ -41,24 +41,27 @@ void                        show_alloc_mem()
 
 void 						*resize_memory_map(size_t size)
 {
-	size_t 					ret;
+	size_t 					check;
 	t_memory_chunk 			*tmp;
 
+	check = 0;
 	tmp = g_memory_map;
+	printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
 	while (tmp && tmp->next)
+		{
+		check += (tmp->size + HEADER_SIZE);
 		tmp = tmp->next;
-	ret = g_memory_map->map_size;
-	while ((size + HEADER_SIZE) >= ret)
-	{
-		if (sbrk(MAP_SIZE) == (void *)-1)
-			return (NULL);		
-		ret += MAP_SIZE;
-	}
+		}
+	check += (tmp->size + HEADER_SIZE);
+	while ((size + HEADER_SIZE + check) >= g_memory_map->map_size)
+		g_memory_map->map_size += MAP_SIZE;
+	if (sbrk(g_memory_map->map_size) == (void *)-1)
+		return (NULL);
 	tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
 	(tmp->next)->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
 	(tmp->next)->size = size;
 	(tmp->next)->_free = 0;
-	(tmp->next)->map_size = ret;
+	(tmp->next)->map_size = g_memory_map->map_size;
 	(tmp->next)->magic_nbr = 1123581321;
 	g_memory_map->_break = sbrk(0);
 	(tmp->next)->next = NULL;
@@ -91,21 +94,25 @@ void 						*split_memory_chunk(t_memory_chunk *tmp, size_t size)
 
 void 						*set_new_block_memory(size_t size)
 {
-	static size_t 			check = 0;
+	size_t 					check;
 	t_memory_chunk 			*tmp;
 
 	tmp = g_memory_map;
+	check = 0;
 	while (tmp && tmp->next)
 	{
-		if ((tmp->size >= (size + HEADER_SIZE)) && tmp->_free == 1)
-			return (split_memory_chunk(tmp, size));
+		// if ((tmp->size >= (size + HEADER_SIZE)) && tmp->_free == 1)
+		// 	return (split_memory_chunk(tmp, size));
 		check += (tmp->size + HEADER_SIZE);
-		if ((check + size + HEADER_SIZE) >= g_memory_map->map_size)
-			return (resize_memory_map(size));
 		tmp = tmp->next;
 	}
+	check += (tmp->size + HEADER_SIZE);
+	printf("Total mémoire utilisée : (%lu)\ntotale mémoire disponible: (%lu)\n", check, g_memory_map->map_size);
+	if (g_memory_map->map_size <= (check + size + HEADER_SIZE))
+		return (resize_memory_map(size));
+	printf("%p  *-   %p    -   %p\n", tmp, tmp->address, tmp->next);
 	tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
-	printf("[%p]  =>    [%p]  /// break : %p\n", tmp, tmp->next, g_memory_map->_break);
+	printf("addresse pointeur next : [%p]\n", tmp->next);
 	(tmp->next)->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
 	(tmp->next)->size = size;
 	(tmp->next)->_free = 0;
@@ -127,11 +134,13 @@ void 						*add_new_chunk_memory(size_t size)
 	tmp = g_memory_map;
 	while (tmp && tmp->next)
 	{
-			check += tmp->size + HEADER_SIZE;
+			check += (tmp->size + HEADER_SIZE);
 			tmp = tmp->next;
 	}
-	printf("check : %lu  size : %lu  HEADER_SIZE : %lu g_map_size: %lu\n", check, size, HEADER_SIZE, g_memory_map->map_size);
-	if ((check + size + HEADER_SIZE) >= (size_t)g_memory_map->map_size)
+	check += tmp->size + HEADER_SIZE;
+	printf("check : %lu  size : %lu  HEADER_SIZE : %lu g_map_size: %lu\n", 
+		check, size, HEADER_SIZE, g_memory_map->map_size);
+	if ((check + size + HEADER_SIZE) >= g_memory_map->map_size)
 		return (resize_memory_map(size));
 	return (set_new_block_memory(size));
 }
@@ -140,16 +149,11 @@ void 						*init_memory_map(size_t size)
 {
 	size_t 					ret;
 
-	ret = 0;
-	if ((g_memory_map = (t_memory_chunk *)sbrk(MAP_SIZE)) == (void *)-1)
-		return (NULL);
 	ret = MAP_SIZE;
 	while ((size + HEADER_SIZE) >= ret)
-	{
-		if (sbrk(MAP_SIZE) == (void *)-1)
-			return (NULL);
 		ret += MAP_SIZE;
-	}
+	if ((g_memory_map = (t_memory_chunk *)sbrk(ret)) == (void *)-1)
+		return (NULL);
 	g_memory_map->address = (void *)(g_memory_map + HEADER_SIZE);
 	g_memory_map->size = size;
 	g_memory_map->_free = 0;
