@@ -97,7 +97,7 @@ void 						*set_new_block_memory(size_t size)
 		tmp = tmp->next;
 	}
 	tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
-	tmp->next->address = (void *)(tmp->address + tmp->size + HEADER_SIZE);
+	tmp->next->address = (void *)((tmp->address + tmp->size) + HEADER_SIZE);
 	tmp->next->size = size;
 	tmp->next->_free = 0;
 	tmp->next->map_size = g_memory_map->map_size;
