@@ -13,7 +13,13 @@ int main()
   printf("\n############################################################\n\n");
   while (i < 50)
     {
-      printf("addr n° %d = %p\n", i, (my_malloc(100000)));
+      printf("FIRST addr n° %d = %p\n", i, (my_malloc(1500)));
+      ++i;
+    }
+  i = 0;
+  while (i < 50)
+    {
+      printf("SECOND addr n° %d = %p\n", i, (my_malloc(15000)));
       ++i;
     }
   i = 0;

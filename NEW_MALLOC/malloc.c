@@ -33,7 +33,7 @@ void                        show_alloc_mem()
     printf("break : %p\n", ((t_memory_chunk *)(g_memory_map + g_memory_map->map_size)));
     while (tmp)
     {
-    printf("%p - %p : %lu octets  -   magic_nbr %i\n", tmp->address,
+    printf("%p - %p : %lu octets  -   magic_nbr %li\n", tmp->address,
           ((t_memory_chunk *)(tmp->address + tmp->size)), tmp->size, tmp->magic_nbr);
     tmp = tmp->next;
     }
@@ -92,7 +92,7 @@ void 						*set_new_block_memory(size_t size)
 	tmp = g_memory_map;
 	while (tmp && tmp->next)
 	{
-		if (tmp->size > size)
+		if (tmp->size > size && tmp->_free == 1)
 			return (split_memory_chunk(tmp, size));
 		tmp = tmp->next;
 	}

@@ -31,8 +31,8 @@ typedef struct 				s_memory_chunk
 	char 					_free;
 	void 					*address;
 	size_t 					size;
-	uint32_t 				map_size;
-	uint32_t 				magic_nbr;
+	uint64_t 				map_size;
+	uint64_t 				magic_nbr;
 	struct s_memory_chunk 	*next;
 	struct s_memory_chunk 	*prev;
 } 							t_memory_chunk;
