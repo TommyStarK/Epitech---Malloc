@@ -23,14 +23,13 @@ int main()
       printf("SECOND addr n° %d = %p\n", i, (my_malloc(150000000)));
       ++i;
     }
-  i = 0;
   s = my_malloc(50);
   printf("\n        MAIN~;START\n\n");
-  printf("Malloc %d: %p\n", i++, s);
+  printf("Malloc: %p\n", s);
   test = my_malloc(2500);
-  printf("Malloc %d: %p\n", i++, test);
+  printf("Malloc: %p\n", test);
   fdp = my_malloc(1234567);
-  printf("Malloc %d: %p\n", i++, fdp);
+  printf("Malloc: %p\n", fdp);
   printf("\n###########################################################\n\n");
   printf("\n ~~~~~~~~ SHOW MEM ALLOC ~~~~~~~~~\n\n");
   show_alloc_mem();

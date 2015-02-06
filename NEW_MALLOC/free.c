@@ -10,3 +10,19 @@
 
 #include "malloc.h"
 
+void                        show_alloc_mem()
+{
+  t_memory_chunk          *tmp;
+
+  tmp = g_memory_map;
+  	if (!tmp)
+  		return;
+  printf("break : %p\n", g_memory_map->_break);
+  while (tmp)
+    {
+      printf("header [%p] address data :[%p] end_data : [%p] = %lu octets  magic_nbr %li\n"
+      	, tmp, tmp->address, ((void *)tmp->address + tmp->size),tmp->size, tmp->magic_nbr);
+      tmp = tmp->next;
+    }
+}
+

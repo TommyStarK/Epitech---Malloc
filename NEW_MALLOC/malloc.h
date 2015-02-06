@@ -18,7 +18,8 @@
 # include "stdint.h"
 # include "pthread.h"
 
-# define ALIGNMENT 			(4)
+# define ALIGNMENT 			(8)
+# define ALIGN_SIZE(size) 	(((size) + (ALIGNMENT-1)) & ~(ALIGNMENT-1))
 # define HEADER_SIZE 		(sizeof(struct s_memory_chunk))
 # define MAP_SIZE 			(21 * sysconf(_SC_PAGESIZE))
 
@@ -60,4 +61,3 @@ void 						show_alloc_mem();
 void 						*my_malloc(size_t);
 
 #endif /* ! __MALLOC_H__ */
-
