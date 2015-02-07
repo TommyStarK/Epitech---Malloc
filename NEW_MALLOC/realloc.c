@@ -9,3 +9,11 @@
 */
 
 #include "malloc.h"
+
+void 					*realloc(void *ptr, size_t size)
+{
+	(void)ptr;
+	(void)size;
+	printf("REALLOC !!!\n");
+	return NULL;
+}

@@ -8,9 +8,8 @@ int main()
   char		*test = NULL;
   char		*fdp = NULL;
 
-  // printf("%p\n", my_malloc(150000000000)); 
   int i = 0;
-   printf("%p\n", my_malloc(4000000)); 
+  printf("%p\n", my_malloc(4000000)); 
   printf("\n############################################################\n\n");
   while (i < 51)
     {
@@ -23,19 +22,18 @@ int main()
        printf("SECOND addr n° %d = %p\n", i, (my_malloc(1500000000))); 
        ++i; 
      } 
-  s = my_malloc(50);
   printf("\n        MAIN~;START\n\n");
-  printf("Malloc: %p\n", s);
+  s = my_malloc(50);
+  printf("Malloc S: %p\n", s);
   test = my_malloc(2500);
-  printf("Malloc: %p\n", test);
+  printf("Malloc TEST: %p\n", test);
   fdp = my_malloc(1234567);
-  printf("Malloc: %p\n", fdp);
+  printf("Malloc FDP: %p\n", fdp);
   printf("\n###########################################################\n\n");
   printf("\n ~~~~~~~~ SHOW MEM ALLOC ~~~~~~~~~\n\n");
   show_alloc_mem();
   printf("\n###########################################################\n\n");
   my_free(fdp);
-  printf("%p\n", fdp);
-  printf("\n        MAIN~END\n\n");
+  printf("POINTEUR PRECEDEMENT FREE :  %p\n", test);
   return 0;
 }

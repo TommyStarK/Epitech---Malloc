@@ -26,24 +26,6 @@ size_t           resize_memory_handler()
   return (check);
 }
 
-void 			      *set_new_chunk_memory_handler(size_t size)
-{
-  t_memory_chunk 			*tmp;
-
-  tmp = g_memory_map;
-  while (tmp && tmp->next)
-    {
-      if ((tmp->size >= size + HEADER_SIZE)
-	  && tmp->_free == 1 && tmp->magic_nbr == 1123581321)
-	return (split_memory_chunk(tmp, size));
-      tmp = tmp->next;
-    }
-  if ((tmp->size >= size + HEADER_SIZE)
-      && tmp->_free == 1 && tmp->magic_nbr == 1123581321)
-    return (split_memory_chunk(tmp, size));
-  return (NULL);
-}
-
 void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
 {
   size_t 					    bckp;
@@ -62,5 +44,6 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   tmp->next->prev  = _new;
   tmp->next = _new;
   pthread_mutex_unlock(&mutex);
+  printf("4 address %p  size asked %lu\n", (tmp->next)->address, size);
   return ((tmp->next)->address);
 }

@@ -51,7 +51,6 @@ enum t_bool
 /*
 ** Extern
 */
-extern int 					g_free;
 extern t_memory_chunk 		*g_memory_map;
 extern pthread_mutex_t 		mutex;
 
@@ -61,7 +60,6 @@ extern pthread_mutex_t 		mutex;
 
 /*            malloc.c                  */
 size_t 						resize_memory_handler();
-void 						*set_new_chunk_memory_handler(size_t size);
 void 						*resize_memory_map(size_t);
 void 						*split_memory_chunk(t_memory_chunk *, size_t);
 void 						*set_new_chunk_memory(size_t);

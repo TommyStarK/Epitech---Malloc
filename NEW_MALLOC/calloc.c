@@ -9,3 +9,11 @@
 */
 
 #include "malloc.h"
+
+void				*calloc(size_t a, size_t b)
+{
+	(void)a;
+	(void)b;
+	printf("CALLLLLLLLLLLLLLOCCCCC\n");
+	return (NULL);
+}

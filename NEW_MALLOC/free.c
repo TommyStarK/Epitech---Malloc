@@ -46,7 +46,6 @@ void                        clean_memory_map()
     if (brk(tmp) == -1)
       return;
     g_memory_map->_break = sbrk(0);
-    printf(" *** %p ***\n", g_memory_map->_break);
     prev->next = NULL;
     clean_memory_map();
   }
@@ -62,22 +61,21 @@ void                        my_free(void *ptr)
     return;
   if (!tmp->next)
   {
-    ptr = NULL;
     if (g_memory_map->address == ptr && g_memory_map->magic_nbr == 1123581321)
       if (brk(g_memory_map) == -1)
         raise(SIGBUS);
+    g_memory_map->address = NULL;
     g_memory_map = NULL;
   }
   else
   {
-    g_free = 1;
     while (tmp && tmp->address != ptr)
       tmp = tmp->next;
     if (tmp->address == ptr && tmp->magic_nbr == 1123581321)
     {
-      ptr = NULL;
-      bzero(tmp->address, tmp->size);
+      // printf("free %p - %lu\n", tmp->address, tmp->size);
       tmp->_free = 1;
+      tmp->address = NULL;
       clean_memory_map();
     }
   }

@@ -10,7 +10,6 @@
 
 #include "malloc.h"
 
-int                   g_free = 0;
 t_memory_chunk 				*g_memory_map = NULL;
 pthread_mutex_t 			mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -48,6 +47,7 @@ void            *init_memory_map(size_t size)
   g_memory_map->next = NULL;
   g_memory_map->prev = NULL;
   pthread_mutex_unlock(&mutex);
+  // printf("1 address %p  size asked %lu\n", g_memory_map->address, size);
   return (g_memory_map->address);
 }
 
@@ -71,16 +71,19 @@ void            *add_new_chunk_memory(size_t size)
 
 void 						*set_new_chunk_memory(size_t size)
 {
-  void            *ret;
   t_memory_chunk 	*tmp;
 
-  ret = NULL;
   tmp = g_memory_map;
   while (tmp && tmp->next)
-    tmp = tmp->next;
-  if (g_free == 1)
-    if ((ret = set_new_chunk_memory_handler(size)))
-      return (ret);
+    {
+      if ((tmp->size >= size + HEADER_SIZE) 
+        && tmp->_free == 1 && tmp->magic_nbr == 1123581321)
+        return (split_memory_chunk(tmp, size));
+      tmp = tmp->next;
+    }
+  if ((tmp->size >= size + HEADER_SIZE) 
+    && tmp->_free == 1 && tmp->magic_nbr == 1123581321)
+     return (split_memory_chunk(tmp, size));
   tmp->next = (t_memory_chunk *)(tmp->address + tmp->size);
   (tmp->next)->address = (((void *)tmp->address) + tmp->size + HEADER_SIZE);
   (tmp->next)->size = size;
@@ -90,6 +93,7 @@ void 						*set_new_chunk_memory(size_t size)
   (tmp->next)->next = NULL;
   (tmp->next)->prev = tmp;
   pthread_mutex_unlock(&mutex);
+  // printf("2 address %p  size asked %lu\n", (tmp->next)->address, size);
   return ((tmp->next)->address);
 }
 
@@ -118,5 +122,6 @@ void            *resize_memory_map(size_t size)
   (tmp->next)->next = NULL;
   (tmp->next)->prev = tmp;
   pthread_mutex_unlock(&mutex);
+  // printf("3 address %p  size asked %lu\n", (tmp->next)->address, size);
   return ((tmp->next)->address);
 }
