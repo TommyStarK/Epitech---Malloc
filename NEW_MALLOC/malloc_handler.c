@@ -31,9 +31,10 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   size_t 					    bckp;
   t_memory_chunk 			*_new;
 
+  printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
   bckp = tmp->size;
   tmp->size = size;
-  _new = (t_memory_chunk *)(tmp + tmp->size + HEADER_SIZE);
+  _new = (t_memory_chunk *)(((void *)tmp) + (tmp->size + HEADER_SIZE));
   _new->address = (((void *)_new) + HEADER_SIZE);
   _new->size = bckp - size;
   _new->_free = 0;
@@ -43,7 +44,7 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   _new->prev = tmp;
   tmp->next->prev  = _new;
   tmp->next = _new;
-  pthread_mutex_unlock(&mutex);
+  // pthread_mutex_unlock(&mutex);
   printf("4 address %p  size asked %lu\n", (tmp->next)->address, size);
   return ((tmp->next)->address);
 }
