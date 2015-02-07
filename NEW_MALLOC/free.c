@@ -26,20 +26,59 @@ void                        show_alloc_mem()
     }
 }
 
+void                        merge_memory_chunks()
+{
+
+}
+
+void                        clean_memory_map()
+{
+  t_memory_chunk            *prev;
+  t_memory_chunk            *tmp;
+
+  tmp = g_memory_map;
+  while (tmp && tmp->next)
+    tmp = tmp->next;
+  prev = tmp->prev;
+  if (tmp->_free == 1 && prev)
+  {
+    tmp->address = NULL;
+    if (brk(tmp) == -1)
+      return;
+    g_memory_map->_break = sbrk(0);
+    printf(" *** %p ***\n", g_memory_map->_break);
+    prev->next = NULL;
+    clean_memory_map();
+  }
+  merge_memory_chunks();
+}
 
 void                        my_free(void *ptr)
 {
   t_memory_chunk            *tmp;
 
   tmp = g_memory_map;
-  if (!ptr || !g_memory_map)
+  if (!ptr || !tmp)
     return;
   if (!tmp->next)
   {
-    if (g_memory_map->magic_nbr == 1123581321)
-      if (brk(g_memory_map->_break) == -1)
+    ptr = NULL;
+    if (g_memory_map->address == ptr && g_memory_map->magic_nbr == 1123581321)
+      if (brk(g_memory_map) == -1)
         raise(SIGBUS);
     g_memory_map = NULL;
-    ptr = NULL;
+  }
+  else
+  {
+    g_free = 1;
+    while (tmp && tmp->address != ptr)
+      tmp = tmp->next;
+    if (tmp->address == ptr && tmp->magic_nbr == 1123581321)
+    {
+      ptr = NULL;
+      bzero(tmp->address, tmp->size);
+      tmp->_free = 1;
+      clean_memory_map();
+    }
   }
 }

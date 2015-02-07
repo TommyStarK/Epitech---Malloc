@@ -8,7 +8,7 @@ int main()
   char		*test = NULL;
   char		*fdp = NULL;
 
-  printf("%p\n", my_malloc(150000000000)); 
+  // printf("%p\n", my_malloc(150000000000)); 
   int i = 0;
    printf("%p\n", my_malloc(4000000)); 
   printf("\n############################################################\n\n");
@@ -34,6 +34,8 @@ int main()
   printf("\n ~~~~~~~~ SHOW MEM ALLOC ~~~~~~~~~\n\n");
   show_alloc_mem();
   printf("\n###########################################################\n\n");
+  my_free(fdp);
+  printf("%p\n", fdp);
   printf("\n        MAIN~END\n\n");
   return 0;
 }
