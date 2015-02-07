@@ -29,5 +29,17 @@ void                        show_alloc_mem()
 
 void                        my_free(void *ptr)
 {
-  (void)ptr;
+  t_memory_chunk            *tmp;
+
+  tmp = g_memory_map;
+  if (!ptr || !g_memory_map)
+    return;
+  if (!tmp->next)
+  {
+    if (g_memory_map->magic_nbr == 1123581321)
+      if (brk(g_memory_map->_break) == -1)
+        raise(SIGBUS);
+    g_memory_map = NULL;
+    ptr = NULL;
+  }
 }

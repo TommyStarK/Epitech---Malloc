@@ -105,7 +105,6 @@ void 						*set_new_block_memory(size_t size)
   (tmp->next)->_free = 0;
   (tmp->next)->map_size = g_memory_map->map_size;
   (tmp->next)->magic_nbr = 1123581321;
-  g_memory_map->_break = sbrk(0);
   (tmp->next)->next = NULL;
   (tmp->next)->prev = tmp;
   pthread_mutex_unlock(&mutex);

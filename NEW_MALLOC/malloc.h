@@ -16,6 +16,7 @@
 # include "stdlib.h"
 # include "string.h"
 # include "stdint.h"
+# include "signal.h"
 # include "pthread.h"
 
 # define ALIGNMENT 			(8)
