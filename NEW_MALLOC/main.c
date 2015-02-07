@@ -8,19 +8,19 @@ int main()
   char		*test = NULL;
   char		*fdp = NULL;
 
-  my_malloc(1000000);
-  show_alloc_mem();
+  /* printf("%p\n", my_malloc(150000000000)); */
   int i = 0;
+  printf("%p\n", my_malloc(40000000));
   printf("\n############################################################\n\n");
-  while (i < 50)
+  while (i < 51)
     {
       printf("n° %d = %p\n", i, (my_malloc(1500)));
       ++i;
     }
   i = 0;
-  while (i < 50)
+  while (i < 51)
     {
-      printf("SECOND addr n° %d = %p\n", i, (my_malloc(150000000)));
+      printf("SECOND addr n° %d = %p\n", i, (my_malloc(1500000000)));
       ++i;
     }
   s = my_malloc(50);

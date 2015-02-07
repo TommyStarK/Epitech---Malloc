@@ -17,10 +17,10 @@ pthread_mutex_t 			mutex = PTHREAD_MUTEX_INITIALIZER;
 **
 */
 
-void 						*resize_memory_map(size_t size)
+size_t           resize_memory_handler()
 {
-  size_t 					check;
-  t_memory_chunk 			*tmp;
+  size_t          check;
+  t_memory_chunk  *tmp;
 
   check = 0;
   tmp = g_memory_map;
@@ -30,15 +30,24 @@ void 						*resize_memory_map(size_t size)
       tmp = tmp->next;
     }
   check += (tmp->size + HEADER_SIZE);
-  printf("check : %lu  map_size : %lu\n", check, g_memory_map->map_size);
+  return (check);
+}
+
+void 						*resize_memory_map(size_t size)
+{
+  size_t         ret;
+  size_t 				 check;
+  t_memory_chunk *tmp;
+
+  tmp = g_memory_map;
+  ret = g_memory_map->map_size;
+  while (tmp && tmp->next)
+      tmp = tmp->next;
+  check = resize_memory_handler();
   while ((size + HEADER_SIZE + check) >= g_memory_map->map_size)
     g_memory_map->map_size += MAP_SIZE;
-  printf("new g_memory_map_size : [%lu]\n", g_memory_map->map_size);
-  if (sbrk(g_memory_map->map_size) == (void *)-1)
-    {
-      printf("TEEEEEEEEEEEEEEESSSSSSSSSSSST     22222\n");
+  if (sbrk(g_memory_map->map_size - ret) == (void *)-1)
       return (NULL);
-    }
   tmp->next = (t_memory_chunk *)(((void *)tmp->address) + tmp->size);
   (tmp->next)->address = (((void *)tmp->address) + tmp->size + HEADER_SIZE);
   (tmp->next)->size = size;
@@ -49,7 +58,7 @@ void 						*resize_memory_map(size_t size)
   (tmp->next)->next = NULL;
   (tmp->next)->prev = tmp;
   pthread_mutex_unlock(&mutex);
-  return (tmp->next->address);
+  return ((tmp->next)->address);
 }
 
 void 						*split_memory_chunk(t_memory_chunk *tmp, size_t size)
@@ -82,6 +91,8 @@ void 						*set_new_block_memory(size_t size)
   check = 0;
   while (tmp && tmp->next)
     {
+      if ((tmp->size >= size + HEADER_SIZE) && tmp->_free == 1)
+        return (split_memory_chunk(tmp,size));
       check += (tmp->size + HEADER_SIZE);
       tmp = tmp->next;
     }
@@ -115,16 +126,9 @@ void 						*add_new_chunk_memory(size_t size)
     }
   check += tmp->size + HEADER_SIZE;
   if ((check + size + HEADER_SIZE) >= g_memory_map->map_size)
-    {
-    printf("TEEEEEEEEEEEEEEESSSSSSSSSSSST   111111\n");
     return (resize_memory_map(size));
-    }
   return (set_new_block_memory(size));
 }
-
-/*
-**
-*/
 
 void 						*init_memory_map(size_t size)
 {
