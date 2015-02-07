@@ -25,3 +25,9 @@ void                        show_alloc_mem()
       tmp = tmp->next;
     }
 }
+
+
+void                        my_free(void *ptr)
+{
+  (void)ptr;
+}
