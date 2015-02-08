@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:37 2015 THOMAS MILOX
-** Last update Sun Feb  8 19:03:57 2015 Emmanuel Chambon
+** Last update Sun Feb  8 20:51:03 2015 Emmanuel Chambon
 */
 
 #ifndef __MALLOC_H__
@@ -38,12 +38,13 @@ typedef struct 			s_memory_chunk
 {
   struct s_memory_chunk 	*prev;
   struct s_memory_chunk 	*next;
+  struct s_memory_chunk 	*last;
   size_t					map_size;
   size_t					size;
   void 						*address;
   char 						_free;
 
- 
+
 } 							t_memory_chunk;
 
 

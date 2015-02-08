@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
-** Last update Sun Feb  8 19:04:50 2015 Emmanuel Chambon
+** Last update Sun Feb  8 20:55:29 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -43,6 +43,7 @@ void            *init_memory_map(size_t size)
   g_memory_map->size = size;
   g_memory_map->_free = 0;
   g_memory_map->map_size = ret;
+  g_memory_map->last = g_memory_map;
   g_memory_map->next = NULL;
   g_memory_map->prev = NULL;
   return ((void *)((size_t)g_memory_map + HEADER));
@@ -72,11 +73,9 @@ void            *add_new_chunk_memory(size_t size)
 
 void 						*set_new_chunk_memory(size_t size)
 {
-  t_memory_chunk				*tmp = g_memory_map;
-  while (tmp && tmp->next)
-    {
-      tmp = tmp->next;
-    }
+  t_memory_chunk				*tmp;
+
+  tmp = g_memory_map->last;
   tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
   tmp->next->address = (void *)((size_t)tmp->address + tmp->size + HEADER);
   tmp->next->size = size;
@@ -84,6 +83,7 @@ void 						*set_new_chunk_memory(size_t size)
   tmp->next->map_size = 0;
   tmp->next->prev = tmp;
   tmp->next->next = NULL;
+  g_memory_map->last = tmp->next;
   return ((void *)((size_t)tmp->next + HEADER));
 }
 
@@ -93,11 +93,9 @@ void            *resize_memory_map(size_t size)
   size_t         check;
   t_memory_chunk *tmp;
 
-  tmp = g_memory_map;
+  tmp = g_memory_map->last;
   ret = g_memory_map->map_size;
   check = resize_memory_handler();
-  while (tmp && tmp->next)
-    tmp = tmp->next;
   while ((size + HEADER + check) >= g_memory_map->map_size)
     g_memory_map->map_size += MAP_SIZE;
   if (sbrk(g_memory_map->map_size - ret) == (void *)-1)
@@ -109,5 +107,6 @@ void            *resize_memory_map(size_t size)
   tmp->next->map_size = g_memory_map->map_size;
   tmp->next->next = NULL;
   tmp->next->prev = tmp;
+  g_memory_map->last = tmp->next;
   return ((void *)((size_t)tmp->next + HEADER));
 }
