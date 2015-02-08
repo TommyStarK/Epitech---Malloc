@@ -12,7 +12,7 @@
 
 void			*calloc(size_t nmemb, size_t size)
 {
-  void		*mem;
+  void			*chunk;
   size_t		total;
 
   total = nmemb * size;
@@ -21,10 +21,10 @@ void			*calloc(size_t nmemb, size_t size)
       errno = ENOMEM;
       return (NULL);
     }
-  if ((mem = malloc(total)) == NULL)
+  if ((chunk = malloc(total)) == NULL)
     {
       errno = ENOMEM;
       return (NULL);
     }
-  return (memset(mem, 0, total));
+  return (memset(chunk, 0, total));
 }

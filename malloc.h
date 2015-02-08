@@ -36,12 +36,14 @@
 
 typedef struct 			s_memory_chunk
 {
-  char 				_free;
-  void 				*address;
-  size_t			size;
-  uint64_t			map_size;
   struct s_memory_chunk 	*prev;
   struct s_memory_chunk 	*next;
+  size_t					map_size;
+  size_t					size;
+  void 						*address;
+  char 						_free;
+
+ 
 } 							t_memory_chunk;
 
 

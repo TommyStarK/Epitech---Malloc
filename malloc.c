@@ -19,7 +19,7 @@ void            *malloc(size_t size)
 {
   size_t          _size;
 
-  if ((size >> 63 == 1) && ((int64_t)size <= 0))
+  if ((size >> 48 == 1) && ((int64_t)size < 0))
     {
       errno = ENOMEM;
       return NULL;
