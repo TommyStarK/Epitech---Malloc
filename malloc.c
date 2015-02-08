@@ -79,24 +79,14 @@ void 						*set_new_chunk_memory(size_t size)
         return (split_memory_chunk(tmp, size));
       tmp = tmp->next;
     }
-  // printf("deb1 = %p\n", tmp);
   tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
-   // printf("deb2 = %p\n", tmp);
   tmp->next->address = (void *)((size_t)tmp->address + tmp->size + HEADER);
-   // printf("deb3 = %p\n", tmp);
   tmp->next->size = size;
-   // printf("deb4 = %p\n", tmp);
   tmp->next->_free = 0;
-   // printf("deb5 = %p\n", tmp);
   tmp->next->map_size = 0;
-   // printf("deb6 = %p\n", tmp);
   tmp->next->magic_nbr = 0;
-  //printf("%p - %p  :  %p\n", tmp->next, tmp->next->prev, tmp);
   tmp->next->prev = tmp;
-  // printf("deb7 = %p\n", tmp);
   tmp->next->next = NULL;
-  // printf("deb8 = %p\n", tmp);
-  // printf("sorti ##############\n");
   return ((void *)((size_t)tmp->next + HEADER));
 }
 

@@ -10,10 +10,21 @@
 
 #include "malloc.h"
 
-void				*calloc(size_t a, size_t b)
+void			*calloc(size_t nmemb, size_t size)
 {
-	(void)a;
-	(void)b;
-	printf("CALLLLLLLLLLLLLLOCCCCC\n");
-	return (NULL);
+	void		*mem;
+  	size_t		total;
+
+	total = nmemb * size;
+	if (size && (total / size != nmemb))
+	{
+	   errno = ENOMEM;
+	   return (NULL);
+	}
+	if ((mem = malloc(total)) == NULL)
+	{
+	   errno = ENOMEM;
+	   return (NULL);
+	}
+	return (memset(mem, 0, total));
 }

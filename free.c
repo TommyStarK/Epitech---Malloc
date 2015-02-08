@@ -12,19 +12,19 @@
 
 void                        show_alloc_mem()
 {
+  size_t                  data;
   t_memory_chunk          *tmp;
 
   tmp = g_memory_map;
-  	if (!tmp)
-  		return;
-  printf("break : %p\n", sbrk(0));
+  printf("break : 0x%lX\n", (size_t) sbrk(0));
   while (tmp)
     {
-      printf("header [%p] address data :[%p] end_data : [%p] = %lu octets  magic_nbr %li\n"
-      	, tmp, tmp->address, ((void *)tmp->address + tmp->size),tmp->size, tmp->magic_nbr);
+      data = (size_t)tmp + HEADER;
+      if (!tmp->_free)
+          printf("0x%lX - 0x%lX : %lu bytes\n",
+                  data, data + tmp->size, tmp->size);
       tmp = tmp->next;
-    }
-}
+    }}
 
 void                        merge_memory_chunks()
 {
@@ -42,15 +42,13 @@ void                        clean_memory_map()
   prev = tmp->prev;
   if (tmp->_free == 1 && prev)
   {
-    tmp->address = NULL;
+    // tmp->address = NULL;
     if (brk(tmp) == -1)
       return;
     prev->next = NULL;
-    // printf("prev (%p)   prev->address (%p) prev->size (%lu)  prev->next (%p)\n", 
-    //   prev, prev->address, prev->size, prev->next);
     clean_memory_map();
   }
-  // merge_memory_chunks();
+  merge_memory_chunks();
 }
 
 void                        free(void *ptr)
@@ -70,15 +68,12 @@ void                        free(void *ptr)
   }
   else
   {
-    while (tmp && tmp->address != ptr)
+    while (tmp->address != ptr)
       tmp = tmp->next;
     if (tmp->address == ptr && tmp->magic_nbr == 1123581321)
     {
-      // printf("\n\nptr  - %p  tmp->address %p size %lu - %lu\n\n", 
-      //   ptr, tmp->address, ((t_memory_chunk *)(ptr - HEADER))->size, tmp->size);
       tmp->_free = 1;
-      tmp->address = NULL;
-      // printf("[%p]\n", tmp->address);
+      // tmp->address = NULL;
       clean_memory_map();
     }
   }
