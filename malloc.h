@@ -1,41 +1,53 @@
 /*
-** malloc.h for Malloc in /home/loxmi/Dropbox/Malloc/v2
+** malloc.h for malloc in /home/loxmi/Dropbox/Malloc/v2/PSU_2014_malloc/NEW_MALLOC
 **
 ** Made by THOMAS MILOX
 ** Login   <loxmi@epitech.net>
 **
-** Started on  Thu Jan 29 14:56:32 2015 THOMAS MILOX
-** Last update Mon Feb  2 18:51:39 2015 THOMAS MILOX
+** Started on  Thu Feb  5 14:41:37 2015 THOMAS MILOX
+** Last update Thu Feb  5 14:42:07 2015 THOMAS MILOX
 */
 
 #ifndef __MALLOC_H__
 # define __MALLOC_H__
 
-# include <unistd.h>
-# include <string.h>
-# include <stdlib.h>
-# include <pthread.h>
 # include <stdio.h>
+# include <errno.h>
+# include <unistd.h>
+# include <stdlib.h>
+# include <string.h>
+# include <stdint.h>
+# include <signal.h>
+# include <pthread.h>
 
-# define ALIGNMENT 				(4)
-# define STRUCT_SIZE 			(sizeof(struct s_range_memory))
+# ifndef _X86_64__
+#	define ALIGNMENT 			(8)
+# else
+# 	define ALIGNMENT 			(4)
+# endif
+
+# define HEADER					(sizeof(struct s_memory_chunk))
+# define ALIGN(size) 			(((size) + (ALIGNMENT - 1)) &~ (ALIGNMENT - 1))
+# define MAP_SIZE 				ALIGN((ALIGNMENT * sysconf(_SC_PAGESIZE)))
 
 /*
 ** Structures
 */
 
-typedef struct 					s_range_memory
+typedef struct 				s_memory_chunk
 {
-	int							flag;
-	int 						padding;
-	void						*address;
-	size_t						size;
-	struct s_range_memory		*prev;
-	struct s_range_memory 		*next;
-}								t_range_memory;
+	char 					_free;
+	void 					*address;
+	size_t 					size;
+	uint64_t 				map_size;
+	uint64_t 				magic_nbr;
+	struct s_memory_chunk 	*prev;
+	struct s_memory_chunk 	*next;
+} 							t_memory_chunk;
 
 
-typedef enum t_bool				t_bool;
+
+typedef enum t_bool 		t_bool;
 enum t_bool
 {
 	FALSE,
@@ -45,21 +57,22 @@ enum t_bool
 /*
 ** Extern
 */
+extern t_memory_chunk 		*g_memory_map;
 
-extern t_range_memory 		*g_range_memory;
-extern pthread_mutex_t 		mutex;
 /*
-** Prototypes Fonctions
+** Prototypes fonctions
 */
 
-/*				free.c 				*/
-void 							my_free(void *);
-t_bool 							check_chunks_flag(t_range_memory *);
-void 							check_chunks_and_move_break();
-void 							show_alloc_mem();
-/* 				malloc.c 			*/
-void 							*my_malloc(size_t);
-size_t 							align_size_4(size_t);
-void 							add_new_range_memory(void *, size_t);
-int 							Scheck_in_free_chunks(void *, size_t);
+/*            malloc.c                  */
+size_t 						resize_memory_handler();
+void 						*resize_memory_map(size_t);
+void 						*split_memory_chunk(t_memory_chunk *, size_t);
+void 						*set_new_chunk_memory(size_t);
+void 						*add_new_chunk_memory(size_t);
+void 						*init_memory_map(size_t);
+void 						*malloc(size_t);
+/*            free.c                    */
+void 						show_alloc_mem();
+void 						free(void *);
+
 #endif /* ! __MALLOC_H__ */

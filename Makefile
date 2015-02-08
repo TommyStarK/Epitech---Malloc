@@ -5,7 +5,7 @@
 ## Login   <loxmi@epitech.net>
 ## 
 ## Started on  Sat Feb  7 21:38:39 2015 THOMAS MILOX
-## Last update Sat Feb  7 21:42:49 2015 THOMAS MILOX
+## Last update Sun Feb  8 03:38:59 2015 THOMAS MILOX
 ##
 
 SRC = 		malloc.c \
@@ -23,4 +23,4 @@ regle:
 
 
 $(NAME):	regle
-		gcc -shared -o $(NAME) $(OBJ)
+		gcc -Wall -Wextra -shared -o $(NAME) $(OBJ)

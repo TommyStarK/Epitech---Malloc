@@ -19,10 +19,10 @@ size_t           resize_memory_handler()
   tmp = g_memory_map;
   while (tmp && tmp->next)
     {
-      check += (tmp->size + HEADER_SIZE);
+      check += (tmp->size + HEADER);
       tmp = tmp->next;
     }
-  check += (tmp->size + HEADER_SIZE);
+  check += (tmp->size + HEADER);
   return (check);
 }
 
@@ -31,11 +31,10 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   size_t 					    bckp;
   t_memory_chunk 			*_new;
 
-  printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
   bckp = tmp->size;
   tmp->size = size;
-  _new = (t_memory_chunk *)(((void *)tmp) + (tmp->size + HEADER_SIZE));
-  _new->address = (((void *)_new) + HEADER_SIZE);
+  _new = (t_memory_chunk *)((size_t)tmp + HEADER + tmp->size);
+  _new->address = (void *)((size_t)_new + HEADER);
   _new->size = bckp - size;
   _new->_free = 0;
   _new->map_size = g_memory_map->map_size;
@@ -44,7 +43,5 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   _new->prev = tmp;
   tmp->next->prev  = _new;
   tmp->next = _new;
-  // pthread_mutex_unlock(&mutex);
-  printf("4 address %p  size asked %lu\n", (tmp->next)->address, size);
-  return ((tmp->next)->address);
+  return ((void *)((size_t)tmp->next + HEADER));
 }

@@ -1,103 +1,127 @@
 /*
-** malloc.c for Malloc in /home/loxmi/Dropbox/Malloc/v2
+** malloc.c for malloc in /home/loxmi/Dropbox/Malloc/v2/PSU_2014_malloc/NEW_MALLOC
 **
 ** Made by THOMAS MILOX
 ** Login   <loxmi@epitech.net>
 **
-** Started on  Thu Jan 29 14:57:01 2015 THOMAS MILOX
-** Last update Mon Feb  2 18:51:01 2015 THOMAS MILOX
+** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
+** Last update Sat Feb  7 05:44:16 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
 
-/* ptr sur liste => attrib  X pages de get_page_size()  
-**
-** A chaque malloc on ajoute un nouvel elem de size octets et l'elem suivant aura pour taille = (X * get_page_size) - size;
-**
-** 
-**
-*/
+t_memory_chunk 				*g_memory_map = NULL;
 
-
-t_range_memory 				*g_range_memory = NULL;
-pthread_mutex_t 			mutex = PTHREAD_MUTEX_INITIALIZER;
 /*
 **
 */
-
-size_t 						align_size_4(size_t size)
+void            *malloc(size_t size)
 {
-	size_t 					ret;
+  size_t          _size;
 
-	// ret = (((((size) - 1) >> 2) << 2) + 4);
-	ret = (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1));
-	return ret;
+  if ((size >> 63 == 1) && ((int64_t)size <= 0))
+    {
+      errno = ENOMEM;
+      return NULL;
+    }
+  _size = ALIGN(size);
+  if (!g_memory_map)
+    return (init_memory_map(_size));
+  return (add_new_chunk_memory(_size));
 }
 
-int 						check_in_free_chunks(void *new_range_memory, size_t size)
+void            *init_memory_map(size_t size)
 {
-	t_range_memory 			*tmp;
+  size_t          ret;
 
-	tmp = g_range_memory;
-	while (tmp && tmp->next)
-		{
-			if (!tmp->flag && tmp->size > size)
-				{
-					tmp = (t_range_memory *)(new_range_memory + size);
-					tmp->address = new_range_memory;
-					tmp->size = size;
-					tmp->flag = 1;
-					return 1;
-				}
-			tmp = tmp->next;
-		}
-	return 0;
+  ret = MAP_SIZE;
+  while ((size + HEADER) >= ret)
+    ret += MAP_SIZE;
+  if ((g_memory_map = (t_memory_chunk *)sbrk(ret)) == (void *)-1)
+    return (NULL);
+  g_memory_map->address = (void *)((size_t)g_memory_map + HEADER);
+  g_memory_map->size = size;
+  g_memory_map->_free = 0;
+  g_memory_map->map_size = ret;
+  g_memory_map->magic_nbr = 1123581321;
+  g_memory_map->next = NULL;
+  g_memory_map->prev = NULL;
+  return ((void *)((size_t)g_memory_map + HEADER));
 }
 
-void 						add_new_range_memory(void *new_range_memory, size_t size)
+void            *add_new_chunk_memory(size_t size)
 {
-	t_range_memory 			*_new;
-	t_range_memory 			*end;
+  size_t          check;
+  t_memory_chunk  *tmp;
 
-	end = g_range_memory;
-	if (!check_in_free_chunks(new_range_memory, size))
-		{
-			while (end && end->next)
-				end = end->next;
-			_new = (t_range_memory *)(new_range_memory + size);
-			_new->address = new_range_memory;
-			_new->size = size;
-			_new->flag = 1;
-			_new->next = NULL;
-			_new->prev = end;
-			end->next = _new;
-		}
+  check = 0;
+  tmp = g_memory_map;
+  while (tmp)
+    {
+      check += (tmp->size + HEADER);
+      tmp = tmp->next;
+    }
+  if ((check + size + HEADER) >= g_memory_map->map_size)
+    return (resize_memory_map(size));
+  return (set_new_chunk_memory(size));
+
 }
 
-void 						*my_malloc(size_t size)
-{
-	size_t 					_size;
-	void 					*new_range_memory;
+void 						*set_new_chunk_memory(size_t size)
+{ 
+  t_memory_chunk 	*tmp;
 
-	pthread_mutex_lock(&mutex);
-	if ((new_range_memory = sbrk(0)) == (void *)-1)
-		return NULL;
-	if (!size)
-		return NULL;
-	_size = align_size_4(size);
-	if ((new_range_memory = sbrk(size + STRUCT_SIZE)) == (void *)-1)
-		return NULL;
-	if (!g_range_memory)
-		{
-			g_range_memory = (t_range_memory *)(new_range_memory + _size);
-			g_range_memory->address = new_range_memory;
-			g_range_memory->size = _size;
-			g_range_memory->flag = 1;
-			g_range_memory->prev = NULL;
-			g_range_memory->next = NULL;
-		}
-	else
-		add_new_range_memory(new_range_memory, _size);
-	pthread_mutex_unlock(&mutex);
-	return (new_range_memory);
+  tmp = g_memory_map;
+  while (tmp && tmp->next)
+    {
+      if ((tmp->size >= size + HEADER) 
+        && tmp->_free == 1 && tmp->magic_nbr == 1123581321)
+        return (split_memory_chunk(tmp, size));
+      tmp = tmp->next;
+    }
+  // printf("deb1 = %p\n", tmp);
+  tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
+   // printf("deb2 = %p\n", tmp);
+  tmp->next->address = (void *)((size_t)tmp->address + tmp->size + HEADER);
+   // printf("deb3 = %p\n", tmp);
+  tmp->next->size = size;
+   // printf("deb4 = %p\n", tmp);
+  tmp->next->_free = 0;
+   // printf("deb5 = %p\n", tmp);
+  tmp->next->map_size = 0;
+   // printf("deb6 = %p\n", tmp);
+  tmp->next->magic_nbr = 0;
+  //printf("%p - %p  :  %p\n", tmp->next, tmp->next->prev, tmp);
+  tmp->next->prev = tmp;
+  // printf("deb7 = %p\n", tmp);
+  tmp->next->next = NULL;
+  // printf("deb8 = %p\n", tmp);
+  // printf("sorti ##############\n");
+  return ((void *)((size_t)tmp->next + HEADER));
+}
+
+void            *resize_memory_map(size_t size)
+{
+  size_t         ret;
+  size_t         check;
+  t_memory_chunk *tmp;
+
+  tmp = g_memory_map;
+  ret = g_memory_map->map_size;
+  check = resize_memory_handler();
+  while (tmp && tmp->next)
+    tmp = tmp->next;
+  while ((size + HEADER + check) >= g_memory_map->map_size)
+    g_memory_map->map_size += MAP_SIZE;
+  if (sbrk(g_memory_map->map_size - ret) == (void *)-1)
+    return (NULL);
+  tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
+  tmp->next->address = (void *)((size_t)tmp->address + tmp->size + HEADER);
+  tmp->next->size = size;
+  tmp->next->_free = 0;
+  tmp->next->map_size = g_memory_map->map_size;
+  tmp->next->magic_nbr = 1123581321;
+  tmp->next->next = NULL;
+  tmp->next->prev = tmp;
+  return ((void *)((size_t)tmp->next + HEADER));
 }

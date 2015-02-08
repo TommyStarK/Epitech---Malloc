@@ -1,108 +1,85 @@
 /*
-** free.c for Free in /home/loxmi/Dropbox/Malloc/v2
+** free.c for free in /home/loxmi/Dropbox/Malloc/v2/PSU_2014_malloc/NEW_MALLOC
 **
 ** Made by THOMAS MILOX
 ** Login   <loxmi@epitech.net>
 **
-** Started on  Thu Jan 29 14:56:16 2015 THOMAS MILOX
-** Last update Sat Feb  7 01:47:10 2015 THOMAS MILOX
+** Started on  Thu Feb  5 14:41:24 2015 THOMAS MILOX
+** Last update Thu Feb  5 14:41:25 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
 
-/*
-** Show_alloc_mem()
-*/
-
-void 						show_alloc_mem()
+void                        show_alloc_mem()
 {
-  size_t 					max_size;
-  t_range_memory 			*tmp;
+  t_memory_chunk          *tmp;
 
-  max_size = 0;
-  tmp = g_range_memory;
+  tmp = g_memory_map;
+  	if (!tmp)
+  		return;
+  printf("break : %p\n", sbrk(0));
   while (tmp)
     {
-      max_size += tmp->size;
-      tmp = tmp->next;
-    }
-  printf("break : %p\n", ((t_range_memory *)(g_range_memory + max_size)));
-  tmp = g_range_memory;
-  while (tmp)
-    {
-      printf("%p - %p : %lu octets\n", tmp->address,
-	     ((t_range_memory *)(tmp->address + tmp->size)), tmp->size);
+      printf("header [%p] address data :[%p] end_data : [%p] = %lu octets  magic_nbr %li\n"
+      	, tmp, tmp->address, ((void *)tmp->address + tmp->size),tmp->size, tmp->magic_nbr);
       tmp = tmp->next;
     }
 }
 
-/*
-** Fonctions pour Free
-*/
-
-t_bool 				check_chunks_flag(t_range_memory *chunk)
+void                        merge_memory_chunks()
 {
-  t_range_memory 	*tmp;
-
-  tmp = chunk;
-  while (tmp)
-    {
-      if (tmp->flag == 1)
-	return FALSE;
-      tmp = tmp->next;
-    }
-  return TRUE;
 }
 
-void 				check_chunks_and_move_break()
+void                        clean_memory_map()
 {
-  t_range_memory 	*tmp;
+  t_memory_chunk            *prev;
+  t_memory_chunk            *tmp;
 
-  tmp = g_range_memory;
-  while (tmp && tmp->flag)
+
+  tmp = g_memory_map;
+  while (tmp && tmp->next)
     tmp = tmp->next;
-  if (check_chunks_flag(tmp) == TRUE)
-    {
-      t_range_memory *bckp;
-      t_range_memory *clean;
-      bckp = tmp;
-      while (tmp)
-	{
-	  clean = tmp;
-	  tmp->flag = 0;
-	  bzero((void *)(tmp->address + tmp->size), STRUCT_SIZE);
-	  tmp = tmp->next;
-	  clean->prev = NULL;
-	  clean->next = NULL;
-	}
-      if (brk(bckp) == -1)
-	return;
-    }
+  prev = tmp->prev;
+  if (tmp->_free == 1 && prev)
+  {
+    tmp->address = NULL;
+    if (brk(tmp) == -1)
+      return;
+    prev->next = NULL;
+    // printf("prev (%p)   prev->address (%p) prev->size (%lu)  prev->next (%p)\n", 
+    //   prev, prev->address, prev->size, prev->next);
+    clean_memory_map();
+  }
+  // merge_memory_chunks();
 }
 
-void 				my_free(void *ptr)
+void                        free(void *ptr)
 {
-  if (!ptr || !g_range_memory)
+  t_memory_chunk            *tmp;
+
+  tmp = g_memory_map;
+  if (!ptr || !tmp)
     return;
-  if (!g_range_memory->next)
-    {
-      bzero(g_range_memory->address, g_range_memory->size);
-      bzero((void *)(g_range_memory->address + g_range_memory->size),
-	    STRUCT_SIZE);
-      if (brk(g_range_memory->address) == -1)
-	return;
-      g_range_memory = NULL;
-      ptr = NULL;
-    }
+  if (!tmp->next)
+  {
+    if (g_memory_map->address == ptr && g_memory_map->magic_nbr == 1123581321)
+      if (brk(g_memory_map) == -1)
+        raise(SIGBUS);
+    g_memory_map->address = NULL;
+    g_memory_map = NULL;
+  }
   else
+  {
+    while (tmp && tmp->address != ptr)
+      tmp = tmp->next;
+    if (tmp->address == ptr && tmp->magic_nbr == 1123581321)
     {
-      t_range_memory 	*tmp;
-      tmp = g_range_memory;
-      while (tmp && tmp->address != ptr)
-	tmp = tmp->next;
-      bzero(tmp->address, tmp->size);
-      tmp->flag = 0;
-      ptr = NULL;
-      check_chunks_and_move_break();
+      // printf("\n\nptr  - %p  tmp->address %p size %lu - %lu\n\n", 
+      //   ptr, tmp->address, ((t_memory_chunk *)(ptr - HEADER))->size, tmp->size);
+      tmp->_free = 1;
+      tmp->address = NULL;
+      // printf("[%p]\n", tmp->address);
+      clean_memory_map();
     }
+  }
 }

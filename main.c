@@ -1,3 +1,4 @@
+
 #include "malloc.h"
 #include <stdio.h>
 
@@ -8,32 +9,31 @@ int main()
   char		*fdp = NULL;
 
   int i = 0;
-  pthread_mutex_init(&mutex, NULL);
+  printf("%p\n", my_malloc(4000000)); 
   printf("\n############################################################\n\n");
-  while (i < 50)
+  while (i < 51)
     {
-      printf("addr n° %d = %p\n", i, (my_malloc(1000000000)));
+      printf("n° %d = %p\n", i, (my_malloc(1500)));
       ++i;
     }
-  i = 0;
-  s = my_malloc(50);
+   i = 0; 
+   while (i < 51) 
+     { 
+       printf("SECOND addr n° %d = %p\n", i, (my_malloc(1500000000))); 
+       ++i; 
+     } 
   printf("\n        MAIN~;START\n\n");
-  printf("Malloc %d: %p\n", i++, s);
+  s = my_malloc(50);
+  printf("Malloc S: %p\n", s);
   test = my_malloc(2500);
-  printf("Malloc %d: %p\n", i++, test);
+  printf("Malloc TEST: %p\n", test);
   fdp = my_malloc(1234567);
-  printf("Malloc %d: %p\n", i++, fdp);
+  printf("Malloc FDP: %p\n", fdp);
   printf("\n###########################################################\n\n");
-  t_range_memory	*tmp = g_range_memory;
-  while (tmp)
-    {
-      printf("plage: %p   -   struct info: %p   -   size: %lu\n", tmp->address, (t_range_memory *)(tmp->address + tmp->size), tmp->size);
-      tmp = tmp->next;
-    }
   printf("\n ~~~~~~~~ SHOW MEM ALLOC ~~~~~~~~~\n\n");
   show_alloc_mem();
   printf("\n###########################################################\n\n");
-  printf("\n        MAIN~END\n\n");
-  pthread_mutex_destroy(&mutex);
+  my_free(fdp);
+  printf("POINTEUR PRECEDEMENT FREE :  %p\n", test);
   return 0;
 }
