@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Sat Feb  7 05:19:21 2015 THOMAS MILOX
-** Last update Sat Feb  7 05:44:27 2015 THOMAS MILOX
+** Last update Sun Feb  8 19:05:40 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -38,7 +38,6 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   _new->size = bckp - size;
   _new->_free = 0;
   _new->map_size = g_memory_map->map_size;
-  _new->magic_nbr = 1123581321;
   _new->next = tmp->next;
   _new->prev = tmp;
   tmp->next->prev  = _new;

@@ -5,7 +5,7 @@
 ## Login   <loxmi@epitech.net>
 ## 
 ## Started on  Sat Feb  7 21:38:39 2015 THOMAS MILOX
-## Last update Sun Feb  8 11:19:03 2015 Emmanuel Chambon
+## Last update Sun Feb  8 15:52:56 2015 Emmanuel Chambon
 ##
 
 CC	=	gcc
@@ -17,10 +17,9 @@ NAME	=	libmy_malloc_$(HOSTTYPE).so
 CFLAGS	=	-Wall -Wextra -fPIC
 
 SRC	=	malloc.c		\
-		malloc_handler.c	\
 		realloc.c		\
-		calloc.c		\
-		free.c 		
+		free.c			\
+		show_mem.c
 
 OBJ	=	$(SRC:.c=.o)
 

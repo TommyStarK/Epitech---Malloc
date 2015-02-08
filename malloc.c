@@ -1,11 +1,11 @@
 /*
 ** malloc.c for malloc in /home/loxmi/Dropbox/Malloc/v2/PSU_2014_malloc/NEW_MALLOC
-**
+1;2802;0c**
 ** Made by THOMAS MILOX
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
-** Last update Sat Feb  7 05:44:16 2015 THOMAS MILOX
+** Last update Sun Feb  8 19:04:50 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -43,7 +43,6 @@ void            *init_memory_map(size_t size)
   g_memory_map->size = size;
   g_memory_map->_free = 0;
   g_memory_map->map_size = ret;
-  g_memory_map->magic_nbr = 1123581321;
   g_memory_map->next = NULL;
   g_memory_map->prev = NULL;
   return ((void *)((size_t)g_memory_map + HEADER));
@@ -56,11 +55,15 @@ void            *add_new_chunk_memory(size_t size)
 
   check = 0;
   tmp = g_memory_map;
-  while (tmp)
+  while (tmp && tmp->next)
     {
       check += (tmp->size + HEADER);
+      if ((tmp->size >= size + HEADER)
+        && tmp->_free == 1)
+        return (split_memory_chunk(tmp, size));
       tmp = tmp->next;
     }
+  check += tmp->size + HEADER;
   if ((check + size + HEADER) >= g_memory_map->map_size)
     return (resize_memory_map(size));
   return (set_new_chunk_memory(size));
@@ -68,15 +71,10 @@ void            *add_new_chunk_memory(size_t size)
 }
 
 void 						*set_new_chunk_memory(size_t size)
-{ 
-  t_memory_chunk 	*tmp;
-
-  tmp = g_memory_map;
+{
+  t_memory_chunk				*tmp = g_memory_map;
   while (tmp && tmp->next)
     {
-      if ((tmp->size >= size + HEADER) 
-        && tmp->_free == 1 && tmp->magic_nbr == 1123581321)
-        return (split_memory_chunk(tmp, size));
       tmp = tmp->next;
     }
   tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
@@ -84,7 +82,6 @@ void 						*set_new_chunk_memory(size_t size)
   tmp->next->size = size;
   tmp->next->_free = 0;
   tmp->next->map_size = 0;
-  tmp->next->magic_nbr = 0;
   tmp->next->prev = tmp;
   tmp->next->next = NULL;
   return ((void *)((size_t)tmp->next + HEADER));
@@ -110,7 +107,6 @@ void            *resize_memory_map(size_t size)
   tmp->next->size = size;
   tmp->next->_free = 0;
   tmp->next->map_size = g_memory_map->map_size;
-  tmp->next->magic_nbr = 1123581321;
   tmp->next->next = NULL;
   tmp->next->prev = tmp;
   return ((void *)((size_t)tmp->next + HEADER));

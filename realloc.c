@@ -5,15 +5,21 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:19 2015 THOMAS MILOX
-** Last update Thu Feb  5 14:41:20 2015 THOMAS MILOX
+** Last update Sun Feb  8 19:12:17 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
 
-void 					*realloc(void *ptr, size_t size)
+void 					*realloc(void *ptt, size_t size)
 {
-	(void)ptr;
-	(void)size;
-	printf("REALLOC !!!\n");
-	return NULL;
+  void *ptr;
+
+  printf("REALLOC !!!\n");
+  if (!(ptr = malloc(size)))
+    return (NULL);
+  ptt = ((void *)ptt) - HEADER;
+  printf("REALLOC milieu %lu\n!!!\n", ((t_memory_chunk *)ptt)->size);
+  memcpy(ptr, ptt, ((t_memory_chunk *)ptt)->size);
+  printf("REALLOC find !!!\n");
+  return ptr;
 }

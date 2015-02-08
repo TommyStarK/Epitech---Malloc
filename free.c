@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:24 2015 THOMAS MILOX
-** Last update Thu Feb  5 14:41:25 2015 THOMAS MILOX
+** Last update Sun Feb  8 19:05:06 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -24,7 +24,8 @@ void                        show_alloc_mem()
           printf("0x%lX - 0x%lX : %lu bytes\n",
                   data, data + tmp->size, tmp->size);
       tmp = tmp->next;
-    }}
+    }
+}
 
 void                        merge_memory_chunks()
 {
@@ -53,6 +54,7 @@ void                        clean_memory_map()
 
 void                        free(void *ptr)
 {
+  return ;
   t_memory_chunk            *tmp;
 
   tmp = g_memory_map;
@@ -60,7 +62,7 @@ void                        free(void *ptr)
     return;
   if (!tmp->next)
   {
-    if (g_memory_map->address == ptr && g_memory_map->magic_nbr == 1123581321)
+    if (g_memory_map->address == ptr)
       if (brk(g_memory_map) == -1)
         raise(SIGBUS);
     g_memory_map->address = NULL;
@@ -70,7 +72,7 @@ void                        free(void *ptr)
   {
     while (tmp->address != ptr)
       tmp = tmp->next;
-    if (tmp->address == ptr && tmp->magic_nbr == 1123581321)
+    if (tmp->address == ptr)
     {
       tmp->_free = 1;
       // tmp->address = NULL;
