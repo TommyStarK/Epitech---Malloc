@@ -10,22 +10,6 @@
 
 #include "malloc.h"
 
-size_t           resize_memory_handler()
-{
-  size_t            check;
-  t_memory_chunk    *tmp;
-
-  check = 0;
-  tmp = g_memory_map;
-  while (tmp && tmp->next)
-    {
-      check += (tmp->size + HEADER);
-      tmp = tmp->next;
-    }
-  check += (tmp->size + HEADER);
-  return (check);
-}
-
 void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
 {
   size_t 					    bckp;

@@ -10,13 +10,13 @@
 
 #include "malloc.h"
 
-void			*calloc(size_t nmemb, size_t size)
+void			*calloc(size_t nbr_alloc, size_t size)
 {
   void			*chunk;
   size_t		total;
 
-  total = nmemb * size;
-  if (size && (total / size != nmemb))
+  total = nbr_alloc * size;
+  if (size && (total / size != nbr_alloc))
     {
       errno = ENOMEM;
       return (NULL);

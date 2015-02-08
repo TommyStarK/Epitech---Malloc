@@ -27,8 +27,9 @@ void                        show_alloc_mem()
     }
 }
 
-void                        merge_memory_chunks()
+void                        merge_memory_chunks(void *ptr)
 {
+  (void)ptr;
 }
 
 void                        clean_memory_map()
@@ -37,46 +38,33 @@ void                        clean_memory_map()
   t_memory_chunk            *tmp;
 
 
-  tmp = g_memory_map;
-  while (tmp && tmp->next)
-    tmp = tmp->next;
+  tmp = g_memory_map->last;
   prev = tmp->prev;
-  if (tmp->_free == 1 && prev)
+  if (tmp->_free == TRUE && prev != NULL)
   {
-    // tmp->address = NULL;
     if (brk(tmp) == -1)
-      return;
+      {
+        errno = ENOMEM;
+        return;
+      }
     prev->next = NULL;
     clean_memory_map();
   }
-  merge_memory_chunks();
 }
 
 void                        free(void *ptr)
 {
   return ;
-  t_memory_chunk            *tmp;
+  t_memory_chunk            *current;
 
-  tmp = g_memory_map;
-  if (!ptr || !tmp)
-    return;
-  if (!tmp->next)
-  {
-    if (g_memory_map->address == ptr)
-      if (brk(g_memory_map) == -1)
-        raise(SIGBUS);
-    g_memory_map->address = NULL;
-    g_memory_map = NULL;
-  }
-  else
-  {
-    while (tmp->address != ptr)
-      tmp = tmp->next;
-    if (tmp->address == ptr)
+  if (!ptr)
     {
-      tmp->_free = 1;
-      // tmp->address = NULL;
-      clean_memory_map();
+      errno = ENOMEM;
+      return;
     }
-  }
+  current = (t_memory_chunk *)((size_t)ptr - HEADER);
+  current->_free = TRUE;
+  g_memory_map->a_free = TRUE;
+  merge_memory_chunks(ptr);
+  clean_memory_map();
 }

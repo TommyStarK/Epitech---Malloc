@@ -34,47 +34,44 @@
 ** Structures
 */
 
-typedef struct 			s_memory_chunk
-{
-  struct s_memory_chunk 	*prev;
-  struct s_memory_chunk 	*next;
-  struct s_memory_chunk 	*last;
-  size_t					map_size;
-  size_t					size;
-  void 						*address;
-  char 						_free;
-
-
-} 							t_memory_chunk;
-
-
-
-typedef enum t_bool 		t_bool;
+typedef enum t_bool 			t_bool;
 enum t_bool
 {
 	FALSE,
 	TRUE
 };
 
+typedef struct 					s_memory_chunk
+{
+  struct s_memory_chunk 		*prev;
+  struct s_memory_chunk 		*next;
+  struct s_memory_chunk 		*last;
+  size_t						map_size;
+  size_t						size;
+  size_t 						a_size;
+  void 							*address;
+  t_bool	 					_free;
+  t_bool 						a_free;
+} 								t_memory_chunk;
+
 /*
 ** Extern
 */
-extern t_memory_chunk 		*g_memory_map;
+extern t_memory_chunk 			*g_memory_map;
 
 /*
 ** Prototypes fonctions
 */
 
 /*            malloc.c                  */
-size_t 						resize_memory_handler();
-void 						*resize_memory_map(size_t);
-void 						*split_memory_chunk(t_memory_chunk *, size_t);
-void 						*set_new_chunk_memory(size_t);
-void 						*add_new_chunk_memory(size_t);
-void 						*init_memory_map(size_t);
-void 						*malloc(size_t);
+void 							*resize_memory_map(size_t);
+void 							*split_memory_chunk(t_memory_chunk *, size_t);
+void 							*set_new_chunk_memory(size_t);
+void 							*add_new_chunk_memory(size_t);
+void 							*init_memory_map(size_t);
+void 							*malloc(size_t);
 /*            free.c                    */
-void 						show_alloc_mem();
-void 						free(void *);
+void 							show_alloc_mem();
+void 							free(void *);
 
 #endif /* ! __MALLOC_H__ */
