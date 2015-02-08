@@ -39,14 +39,13 @@ void                        clean_memory_map()
 
 
   tmp = g_memory_map->last;
-  prev = tmp->prev;
-  if (tmp->_free == TRUE && prev != NULL)
+  if (tmp->_free == TRUE)
   {
+    while (tmp && tmp->prev && tmp->_free == TRUE)
+      tmp = tmp->prev;
+    prev = tmp->prev;
     if (brk(tmp) == -1)
-      {
-        errno = ENOMEM;
         return;
-      }
     prev->next = NULL;
     clean_memory_map();
   }
@@ -54,17 +53,12 @@ void                        clean_memory_map()
 
 void                        free(void *ptr)
 {
-  return ;
-  t_memory_chunk            *current;
-
+  // return;
   if (!ptr)
-    {
-      errno = ENOMEM;
-      return;
-    }
-  current = (t_memory_chunk *)((size_t)ptr - HEADER);
-  current->_free = TRUE;
+    return;
+  // printf("FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\n");
   g_memory_map->a_free = TRUE;
-  merge_memory_chunks(ptr);
+  ((t_memory_chunk *)((size_t)ptr - HEADER))->size = TRUE;
+  // merge_memory_chunks(ptr);
   clean_memory_map();
 }
