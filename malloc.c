@@ -58,7 +58,7 @@ void            *add_new_chunk_memory(size_t size)
   tmp = g_memory_map;
   if (g_memory_map->a_free == TRUE)
   {
-  while (tmp && tmp->next)
+  while (tmp && tmp->_free == TRUE)
     {
       if ((tmp->size >= size + HEADER) && tmp->_free == 1)
         return (split_memory_chunk(tmp, size));

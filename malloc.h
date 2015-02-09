@@ -72,6 +72,7 @@ void 							*init_memory_map(size_t);
 void 							*malloc(size_t);
 /*            free.c                    */
 void 							show_alloc_mem();
+void 							bring_back_break();
 void 							free(void *);
 
 #endif /* ! __MALLOC_H__ */
