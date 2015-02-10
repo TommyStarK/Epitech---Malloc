@@ -5,28 +5,39 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Sat Feb  7 05:19:21 2015 THOMAS MILOX
-** Last update Tue Feb 10 10:22:01 2015 Emmanuel Chambon
+** Last update Tue Feb 10 17:43:34 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
 
-void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
+void				*split_memory_chunk(t_memory_chunk *tmp, size_t size)
 {
-  size_t 					    bckp;
-  t_memory_chunk 			*_new;
+  t_memory_chunk		*new;
+  size_t			s;
 
-  printf("split \n");
-  usleep(0.5);
-  bckp = tmp->size;
-  tmp->size = size;
-  _new = (t_memory_chunk *)((size_t)tmp + HEADER + tmp->size);
-  _new->address = (void *)((size_t)_new + HEADER);
-  _new->size = bckp - size;
-  _new->_free = 0;
-  _new->map_size = g_memory_map->map_size;
-  _new->next = tmp->next;
-  _new->prev = tmp;
-  tmp->next->prev  = _new;
-  tmp->next = _new;
-  return ((void *)((size_t)tmp->next + HEADER));
+  printf("split\n");
+  tmp->_free = FALSE;
+  if (tmp->size == size)
+    return ((void *)((size_t)tmp + HEADER));
+  else if (tmp->size >= (size + HEADER + 8))
+    {
+      s = tmp->size;
+      tmp->size = size;
+      new = ((void *)tmp) + HEADER + size;
+      new->size = s - HEADER - size;
+      new->address = ((void *)new) + HEADER;
+      new->_free = TRUE;
+      new->next = tmp->next;
+      new->prev = tmp;
+      tmp->next = new;
+      new->next_freed = tmp->next_freed;
+      new->prev_freed = tmp->prev_freed;
+      if (new->next_freed)
+	new->next_freed->prev_freed = new;
+      if (new->prev_freed)
+	new->prev_freed->next_freed = new;
+      if (g_memory_map->last_freed == tmp)
+	g_memory_map->last_freed = new;
+    }
+  return ((void *)((size_t)tmp + HEADER));
 }

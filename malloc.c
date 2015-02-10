@@ -3,9 +3,9 @@
 1;2802;0c**
 ** Made by THOMAS MILOX
 ** Login   <loxmi@epitech.net>
-**
+1;2802;0c**
 ** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
-** Last update Tue Feb 10 10:26:01 2015 Emmanuel Chambon
+** Last update Tue Feb 10 17:47:06 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -49,6 +49,7 @@ void            *init_memory_map(size_t size)
   g_memory_map->next = NULL;
   g_memory_map->prev = NULL;
   g_memory_map->next_freed = NULL;
+  g_memory_map->prev_freed = NULL;
   g_memory_map->last_freed = NULL;
   return ((void *)((size_t)g_memory_map + HEADER));
 }
@@ -58,9 +59,10 @@ void            *add_new_chunk_memory(size_t size)
   t_memory_chunk  *tmp;
 
   tmp = g_memory_freed;
-  while (tmp && tmp->next_freed)
+  while (tmp)
     {
-      if ((tmp->size >= size + HEADER) && tmp->_free == TRUE)
+      //      printf("%p\n", tmp);
+      if ((tmp->size >= size) && tmp->_free == TRUE)
         return (split_memory_chunk(tmp, size));
       tmp = tmp->next_freed;
     }
@@ -84,6 +86,7 @@ void 						*set_new_chunk_memory(size_t size)
   tmp->next->next = NULL;
   tmp->next->next_freed = NULL;
   tmp->next->last_freed = NULL;
+  tmp->next->prev_freed = NULL;
   g_memory_map->a_size += (size + HEADER);
   g_memory_map->last = tmp->next;
   return ((void *)((size_t)tmp->next + HEADER));
@@ -109,6 +112,7 @@ void            *resize_memory_map(size_t size)
   tmp->next->prev = tmp;
   tmp->next->next_freed = NULL;
   tmp->next->last_freed = NULL;
+  tmp->next->prev_freed = NULL;
   g_memory_map->a_size += (size + HEADER);
   g_memory_map->last = tmp->next;
   return ((void *)((size_t)tmp->next + HEADER));
