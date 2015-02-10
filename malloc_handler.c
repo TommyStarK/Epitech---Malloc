@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Sat Feb  7 05:19:21 2015 THOMAS MILOX
-** Last update Sun Feb  8 19:05:40 2015 Emmanuel Chambon
+** Last update Tue Feb 10 10:22:01 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -15,6 +15,8 @@ void 			      *split_memory_chunk(t_memory_chunk *tmp, size_t size)
   size_t 					    bckp;
   t_memory_chunk 			*_new;
 
+  printf("split \n");
+  usleep(0.5);
   bckp = tmp->size;
   tmp->size = size;
   _new = (t_memory_chunk *)((size_t)tmp + HEADER + tmp->size);

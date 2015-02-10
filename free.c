@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:24 2015 THOMAS MILOX
-** Last update Sun Feb  8 19:05:06 2015 Emmanuel Chambon
+** Last update Tue Feb 10 10:23:25 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
@@ -21,49 +21,32 @@ void                        show_alloc_mem()
     {
       chunk = (size_t)tmp + HEADER;
       if (!tmp->_free)
-          printf("0x%lX - 0x%lX : %lu bytes\n", chunk, 
+          printf("0x%lX - 0x%lX : %lu bytes\n", chunk,
             chunk + tmp->size, tmp->size);
       tmp = tmp->next;
     }
 }
 
-void                        merge_memory_chunks(void *ptr)
+void			    free_memory_chunk(void *ptr)
 {
-  (void)ptr;
-}
-
-void                        bring_back_break()
-{
-  t_memory_chunk            *prev;
-  t_memory_chunk            *tmp;
-
-
-  tmp = g_memory_map->last;
-  if (tmp->_free == TRUE)
-  {
-    if (tmp->prev)
-      g_memory_map->last = tmp->prev;
-    while (tmp->prev && tmp->prev->_free == TRUE)
-      tmp = tmp->prev;
-    prev = tmp->prev;
-    if (brk(tmp) == -1)
-        return;
-    if (prev)
-      prev->next = NULL;
-    else 
-      g_memory_map = NULL;
-  }
+  /* if (((t_memory_chunk *)((size_t)ptr - HEADER)) == g_memory_map->last) */
+  /*   brk(((t_memory_chunk *)((size_t)ptr - HEADER))); */
+  ((t_memory_chunk *)((size_t)ptr - HEADER))->_free = TRUE;
+  ((t_memory_chunk *)((size_t)ptr - HEADER))->next_freed = NULL;
+  if (g_memory_freed == NULL)
+    {
+      g_memory_freed = ((t_memory_chunk *)((size_t)ptr - HEADER));
+      g_memory_map->last_freed = ((t_memory_chunk *)((size_t)ptr - HEADER));
+    }
+  else
+    g_memory_map->last_freed->next_freed = ((t_memory_chunk *)((size_t)ptr - HEADER));
 }
 
 void                        free(void *ptr)
 {
-  return;
   if (!ptr)
     return;
-  if (((t_memory_chunk *)((size_t)ptr - HEADER))->_free == TRUE)
-    raise(SIGABRT);
-  g_memory_map->a_free = TRUE;
-  ((t_memory_chunk *)((size_t)ptr - HEADER))->_free = TRUE;
-  // merge_memory_chunks(ptr);
-  bring_back_break();
+  /* if (((t_memory_chunk *)((size_t)ptr - HEADER))->_free == TRUE) */
+  /*   raise(SIGABRT); */
+  free_memory_chunk(ptr);
 }

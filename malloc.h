@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:37 2015 THOMAS MILOX
-** Last update Sun Feb  8 20:51:03 2015 Emmanuel Chambon
+** Last update Tue Feb 10 10:11:15 2015 Emmanuel Chambon
 */
 
 #ifndef __MALLOC_H__
@@ -21,14 +21,14 @@
 # include <pthread.h>
 
 # ifndef _X86_64__
-#	define ALIGNMENT 			(8)
+#	define ALIGNMENT 	       	(8)
 # else
-# 	define ALIGNMENT 			(4)
+# 	define ALIGNMENT       		(4)
 # endif
 
-# define HEADER					(sizeof(struct s_memory_chunk))
+# define HEADER				(sizeof(struct s_memory_chunk))
 # define ALIGN(size) 			(((size) + (ALIGNMENT - 1)) &~ (ALIGNMENT - 1))
-# define MAP_SIZE 				ALIGN((ALIGNMENT * sysconf(_SC_PAGESIZE)))
+# define MAP_SIZE 			ALIGN((ALIGNMENT * sysconf(_SC_PAGESIZE)))
 
 /*
 ** Structures
@@ -41,38 +41,40 @@ enum t_bool
 	TRUE
 };
 
-typedef struct 					s_memory_chunk
+typedef struct 				s_memory_chunk
 {
   struct s_memory_chunk 		*prev;
   struct s_memory_chunk 		*next;
   struct s_memory_chunk 		*last;
-  size_t						map_size;
-  size_t						size;
-  size_t 						a_size;
-  void 							*address;
-  t_bool	 					_free;
-  t_bool 						a_free;
-} 								t_memory_chunk;
+  struct s_memory_chunk 		*next_freed;
+  struct s_memory_chunk 		*last_freed;
+  size_t				map_size;
+  size_t				size;
+  size_t 				a_size;
+  void 					*address;
+  t_bool	 			_free;
+} 				      	t_memory_chunk;
 
 /*
 ** Extern
 */
 extern t_memory_chunk 			*g_memory_map;
+extern t_memory_chunk 			*g_memory_freed;
 
 /*
 ** Prototypes fonctions
 */
 
 /*            malloc.c                  */
-void 							*resize_memory_map(size_t);
-void 							*split_memory_chunk(t_memory_chunk *, size_t);
-void 							*set_new_chunk_memory(size_t);
-void 							*add_new_chunk_memory(size_t);
-void 							*init_memory_map(size_t);
-void 							*malloc(size_t);
+void 					*resize_memory_map(size_t);
+void 					*split_memory_chunk(t_memory_chunk *, size_t);
+void 					*set_new_chunk_memory(size_t);
+void 					*add_new_chunk_memory(size_t);
+void 					*init_memory_map(size_t);
+void 					*malloc(size_t);
 /*            free.c                    */
-void 							show_alloc_mem();
-void 							bring_back_break();
-void 							free(void *);
+void 					show_alloc_mem();
+void 					bring_back_break();
+void 					free(void *);
 
 #endif /* ! __MALLOC_H__ */

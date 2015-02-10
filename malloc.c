@@ -5,12 +5,13 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
-** Last update Sun Feb  8 20:55:29 2015 Emmanuel Chambon
+** Last update Tue Feb 10 10:26:01 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
 
 t_memory_chunk 				*g_memory_map = NULL;
+t_memory_chunk				*g_memory_freed = NULL;
 
 /*
 **
@@ -44,10 +45,11 @@ void            *init_memory_map(size_t size)
   g_memory_map->_free = FALSE;
   g_memory_map->map_size = ret;
   g_memory_map->a_size  = (size + HEADER);
-  g_memory_map->a_free = FALSE;
   g_memory_map->last = g_memory_map;
   g_memory_map->next = NULL;
   g_memory_map->prev = NULL;
+  g_memory_map->next_freed = NULL;
+  g_memory_map->last_freed = NULL;
   return ((void *)((size_t)g_memory_map + HEADER));
 }
 
@@ -55,16 +57,13 @@ void            *add_new_chunk_memory(size_t size)
 {
   t_memory_chunk  *tmp;
 
-  tmp = g_memory_map;
-  if (g_memory_map->a_free == TRUE)
-  {
-  while (tmp && tmp->_free == TRUE)
+  tmp = g_memory_freed;
+  while (tmp && tmp->next_freed)
     {
-      if ((tmp->size >= size + HEADER) && tmp->_free == 1)
+      if ((tmp->size >= size + HEADER) && tmp->_free == TRUE)
         return (split_memory_chunk(tmp, size));
-      tmp = tmp->next;
+      tmp = tmp->next_freed;
     }
-  }
   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     return (resize_memory_map(size));
   return (set_new_chunk_memory(size));
@@ -83,6 +82,8 @@ void 						*set_new_chunk_memory(size_t size)
   tmp->next->map_size = 0;
   tmp->next->prev = tmp;
   tmp->next->next = NULL;
+  tmp->next->next_freed = NULL;
+  tmp->next->last_freed = NULL;
   g_memory_map->a_size += (size + HEADER);
   g_memory_map->last = tmp->next;
   return ((void *)((size_t)tmp->next + HEADER));
@@ -106,6 +107,8 @@ void            *resize_memory_map(size_t size)
   tmp->next->map_size = g_memory_map->map_size;
   tmp->next->next = NULL;
   tmp->next->prev = tmp;
+  tmp->next->next_freed = NULL;
+  tmp->next->last_freed = NULL;
   g_memory_map->a_size += (size + HEADER);
   g_memory_map->last = tmp->next;
   return ((void *)((size_t)tmp->next + HEADER));
