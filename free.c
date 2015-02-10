@@ -14,8 +14,10 @@ void                        show_alloc_mem()
 {
   size_t                  chunk;
   t_memory_chunk          *tmp;
+  t_memory_chunk          *_free;
 
   tmp = g_memory_map;
+  _free = g_memory_freed;
   printf("break : 0x%lX\n", (size_t) sbrk(0));
   while (tmp)
     {
@@ -25,23 +27,29 @@ void                        show_alloc_mem()
             chunk + tmp->size, tmp->size);
       tmp = tmp->next;
     }
+  while (_free)
+    {
+      printf("%p\n", _free);
+      _free = _free->next_freed;
+    }
 }
+
 void				merge(void *ptr)
 {
   t_memory_chunk		*actual;
 
-  actual = (t_memory_chunk *)(ptr - HEADER);
+  actual = (t_memory_chunk *)((size_t)ptr - HEADER);
   if (actual->prev != NULL && actual->prev->_free == TRUE)
     {
       printf("merge prev\n");
       if (actual->prev == g_memory_map->last)
-	if (g_memory_map->last->prev)
-	  g_memory_map->last = g_memory_map->last->prev;
+	     if (g_memory_map->last->prev)
+	       g_memory_map->last = g_memory_map->last->prev;
       actual->prev->size += actual->size + HEADER;
       if (actual->prev)
-	actual->prev->next = actual->next;
+	     actual->prev->next = actual->next;
       if (actual->next && actual->prev)
-	actual->next->prev = actual->prev;
+	     actual->next->prev = actual->prev;
     }
   else if (actual->next != NULL && actual->next->_free == TRUE)
     {
@@ -50,13 +58,13 @@ void				merge(void *ptr)
       actual->next_freed = actual->next->next_freed;
       actual->prev_freed = actual->next->prev_freed;
       if (actual->prev_freed)
-	actual->prev_freed->next_freed = actual;
+      	actual->prev_freed->next_freed = actual;
       if (actual->next_freed)
-	actual->next_freed->prev_freed = actual;
+	     actual->next_freed->prev_freed = actual;
       if (actual->next && actual->next->next)
-	actual->next->next->prev = actual;
+	     actual->next->next->prev = actual;
       if (actual->prev)
-	actual->prev->next = actual;
+	     actual->prev->next = actual;
     }
 }
 
@@ -75,8 +83,10 @@ void			    free_memory_chunk(void *ptr)
       g_memory_freed = ((t_memory_chunk *)((size_t)ptr - HEADER));
       g_memory_map->last_freed = g_memory_freed;
     }
-  else {
-    g_memory_map->last_freed->next_freed = ((t_memory_chunk *)((size_t)ptr - HEADER));
+  else
+  {
+    g_memory_map->last_freed->next_freed 
+      = ((t_memory_chunk *)((size_t)ptr - HEADER));
     g_memory_map->last_freed = g_memory_map->last_freed->next_freed;
   }
 }

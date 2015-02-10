@@ -61,7 +61,7 @@ void            *add_new_chunk_memory(size_t size)
   tmp = g_memory_freed;
   while (tmp)
     {
-      //      printf("%p\n", tmp);
+      printf("%p\n", tmp);
       if ((tmp->size >= size) && tmp->_free == TRUE)
         return (split_memory_chunk(tmp, size));
       tmp = tmp->next_freed;

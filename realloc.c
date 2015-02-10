@@ -10,17 +10,6 @@
 
 #include "malloc.h"
 
-// void 					*realloc(void *ptt, size_t size)
-// {
-//   void *ptr = malloc(size);
-//   if (!ptt)
-//     return ptr;
-//   void *tmp = ((void *)ptt) - HEADER;
-//   ptt = memcpy(ptr, ptt, ((t_memory_chunk *)(tmp))->size);
-//   return ptr;
-// }
-
-
 void 					*realloc(void *old_chunk, size_t size)
 {
   void 					*new_chunk;

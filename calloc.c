@@ -16,6 +16,8 @@ void			*calloc(size_t nbr_alloc, size_t size)
   size_t		total;
 
   total = nbr_alloc * size;
+  if (!total)
+    return (NULL);
   if (size && (total / size != nbr_alloc))
     {
       errno = ENOMEM;
