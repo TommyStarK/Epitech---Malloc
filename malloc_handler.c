@@ -5,16 +5,16 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Sat Feb  7 05:19:21 2015 THOMAS MILOX
-** Last update Tue Feb 10 17:43:34 2015 Emmanuel Chambon
+** Last update Wed Feb 11 08:01:38 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
 
 void				        *split_memory_chunk(t_memory_chunk **current, size_t size)
 {
-  size_t            bckp;
-  t_memory_chunk    *tmp;
-  t_memory_chunk    *_new;
+  size_t				bckp;
+  t_memory_chunk			*tmp;
+  t_memory_chunk			*_new;
 
   tmp = *current;
   printf("tmp :%p\n", tmp);
@@ -32,13 +32,8 @@ void				        *split_memory_chunk(t_memory_chunk **current, size_t size)
   _new->next_freed = tmp->next_freed;
   _new->prev_freed = tmp->prev_freed;
   tmp->next = _new;
-  if (tmp == g_memory_map->last)
-    {
-    g_memory_map->last = _new;
-    }
-  if (tmp == g_memory_freed->last_freed) 
-    {
-    g_memory_freed->last_freed = _new;
-    }
+  g_memory_map->last = (tmp == g_memory_map->last ? _new : g_memory_map->last);
+  g_memory_freed->last_freed =
+    (tmp == g_memory_freed->last_freed ? _new : g_memory_freed->last_freed);
   return ((*current)->address);
 }

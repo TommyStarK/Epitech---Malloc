@@ -5,16 +5,16 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:24 2015 THOMAS MILOX
-** Last update Wed Feb 11 06:19:10 2015 THOMAS MILOX
+** Last update Wed Feb 11 08:02:46 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
 
 void                        show_alloc_mem()
 {
-  size_t                  chunk;
-  t_memory_chunk          *tmp;
-  t_memory_chunk          *_free;
+  size_t			chunk;
+  t_memory_chunk		*tmp;
+  t_memory_chunk		*_free;
 
   tmp = g_memory_map;
   _free = g_memory_freed;
@@ -36,10 +36,10 @@ void                        show_alloc_mem()
 
 void                        re_position_break_in_memory()
 {
-  t_memory_chunk            *end;
+  t_memory_chunk		*end;
 
   end = g_memory_freed->last_freed;
-  if ((void *)((void *)end->address + end->n_size) == 
+  if ((void *)((void *)end->address + end->n_size) ==
       (void *)((void *)g_memory_map->last + g_memory_map->last->size))
   {
     if (end->prev)
@@ -57,9 +57,9 @@ void                        re_position_break_in_memory()
 
 void                        merge(t_memory_chunk *current)
 {
-  size_t                    new_size;
-  t_memory_chunk            *left;
-  t_memory_chunk            *right;
+  size_t			new_size;
+  t_memory_chunk		*left;
+  t_memory_chunk		*right;
 
 
   left = current;
@@ -86,7 +86,7 @@ void                        merge(t_memory_chunk *current)
 
 void                        free(void *ptr)
 {
-  t_memory_chunk            *current;
+  t_memory_chunk		*current;
 
   if (!ptr)
     return;
