@@ -10,12 +10,17 @@
 
 #include "malloc.h"
 
+/*
+**
+*/
+
 t_memory_chunk 				*g_memory_map = NULL;
 t_memory_chunk				*g_memory_freed = NULL;
 
 /*
 **
 */
+
 void            *malloc(size_t size)
 {
   size_t          _size;
@@ -40,7 +45,7 @@ void            *init_memory_map(size_t size)
     ret += MAP_SIZE;
   if ((g_memory_map = (t_memory_chunk *)sbrk(ret)) == (void *)-1)
     return (NULL);
-  g_memory_map->address = (void *)((size_t)g_memory_map + HEADER);
+  g_memory_map->address = (void *)((void *)g_memory_map + HEADER);
   g_memory_map->size = size;
   g_memory_map->_free = FALSE;
   g_memory_map->map_size = ret;
@@ -51,21 +56,21 @@ void            *init_memory_map(size_t size)
   g_memory_map->next_freed = NULL;
   g_memory_map->prev_freed = NULL;
   g_memory_map->last_freed = NULL;
-  return ((void *)((size_t)g_memory_map + HEADER));
+  return ((void *)((void *)g_memory_map + HEADER));
 }
 
 void            *add_new_chunk_memory(size_t size)
 {
-  t_memory_chunk  *tmp;
+  // t_memory_chunk  *tmp;
 
-  tmp = g_memory_freed;
-  while (tmp)
-    {
-      printf("%p\n", tmp);
-      if ((tmp->size >= size) && tmp->_free == TRUE)
-        return (split_memory_chunk(tmp, size));
-      tmp = tmp->next_freed;
-    }
+  // tmp = g_memory_freed;
+  // while (tmp)
+  //   {
+  //     // printf("%p\n", tmp);
+  //     if ((tmp->size >= size) && tmp->_free == TRUE)
+  //       return (split_memory_chunk(tmp, size));
+  //     tmp = tmp->next_freed;
+  //   }
   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     return (resize_memory_map(size));
   return (set_new_chunk_memory(size));
@@ -77,19 +82,19 @@ void 						*set_new_chunk_memory(size_t size)
   t_memory_chunk				*tmp;
 
   tmp = g_memory_map->last;
-  tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
-  tmp->next->address = (void *)((size_t)tmp->address + tmp->size + HEADER);
+  tmp->next = (t_memory_chunk *)((void *)tmp->address + tmp->size);
+  tmp->next->address = (void *)((void *)tmp->address + (tmp->size + HEADER));
   tmp->next->size = size;
   tmp->next->_free = FALSE;
   tmp->next->map_size = 0;
   tmp->next->prev = tmp;
   tmp->next->next = NULL;
-  tmp->next->next_freed = NULL;
-  tmp->next->last_freed = NULL;
   tmp->next->prev_freed = NULL;
+  tmp->next->next_freed = NULL;
+  // tmp->next->last_freed = NULL;
   g_memory_map->a_size += (size + HEADER);
   g_memory_map->last = tmp->next;
-  return ((void *)((size_t)tmp->next + HEADER));
+  return ((void *)((void *)tmp->next + HEADER));
 }
 
 void            *resize_memory_map(size_t size)
@@ -103,17 +108,17 @@ void            *resize_memory_map(size_t size)
     g_memory_map->map_size += MAP_SIZE;
   if (sbrk(g_memory_map->map_size - ret) == (void *)-1)
     return (NULL);
-  tmp->next = (t_memory_chunk *)((size_t)tmp->address + tmp->size);
-  tmp->next->address = (void *)((size_t)tmp->address + tmp->size + HEADER);
+  tmp->next = (t_memory_chunk *)((void *)tmp->address + tmp->size);
+  tmp->next->address = (void *)((void *)tmp->address + (tmp->size + HEADER));
   tmp->next->size = size;
   tmp->next->_free = FALSE;
   tmp->next->map_size = g_memory_map->map_size;
   tmp->next->next = NULL;
   tmp->next->prev = tmp;
-  tmp->next->next_freed = NULL;
-  tmp->next->last_freed = NULL;
   tmp->next->prev_freed = NULL;
+  tmp->next->next_freed = NULL;
+  // tmp->next->last_freed = NULL;
   g_memory_map->a_size += (size + HEADER);
   g_memory_map->last = tmp->next;
-  return ((void *)((size_t)tmp->next + HEADER));
+  return ((void *)((void *)tmp->next + HEADER));
 }

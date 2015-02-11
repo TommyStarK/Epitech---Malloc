@@ -19,7 +19,7 @@ void 					*realloc(void *old_chunk, size_t size)
   if (!old_chunk)
     return (new_chunk);
   new_chunk = memcpy(new_chunk, old_chunk,
-  	((t_memory_chunk *)((size_t)old_chunk - HEADER))->size);
-  free(old_chunk);
+  	((t_memory_chunk *)((void *)old_chunk - HEADER))->size);
+  //free(old_chunk);
   return (new_chunk);
 }
