@@ -52,6 +52,7 @@ typedef struct 				s_memory_chunk
   size_t				map_size;
   size_t				size;
   size_t 				a_size;
+  size_t        n_size;
   void 					*address;
   t_bool	 			_free;
 } 				      	t_memory_chunk;
@@ -68,7 +69,7 @@ extern t_memory_chunk 			*g_memory_freed;
 
 /*            malloc.c                  */
 void 					*resize_memory_map(size_t);
-void 					*split_memory_chunk(t_memory_chunk *, size_t);
+void 					*split_memory_chunk(t_memory_chunk **, size_t);
 void 					*set_new_chunk_memory(size_t);
 void 					*add_new_chunk_memory(size_t);
 void 					*init_memory_map(size_t);

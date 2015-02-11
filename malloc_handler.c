@@ -10,33 +10,35 @@
 
 #include "malloc.h"
 
-void				        *split_memory_chunk(t_memory_chunk *tmp, size_t size)
+void				        *split_memory_chunk(t_memory_chunk **current, size_t size)
 {
-  size_t             s;
-  t_memory_chunk		*new;
+  size_t            bckp;
+  t_memory_chunk    *tmp;
+  t_memory_chunk    *_new;
 
+  tmp = *current;
+  printf("tmp :%p\n", tmp);
+  bckp = tmp->n_size;
+  printf("bckp : %lu\n", bckp);
   tmp->_free = FALSE;
-  if (tmp->size == size)
-    return ((void *)((size_t)tmp + HEADER));
-  else if (tmp->size >= (size + HEADER + 8))
+  tmp->size = size;
+  _new = (t_memory_chunk *)((void *)tmp->address + size);
+  _new->address = (void *)((void *)_new + HEADER);
+  printf("_new->address %p\n", _new->address);
+  _new->size = bckp - size;
+  _new->_free = TRUE;
+  _new->next = tmp->next;
+  _new->prev = tmp;
+  _new->next_freed = tmp->next_freed;
+  _new->prev_freed = tmp->prev_freed;
+  tmp->next = _new;
+  if (tmp == g_memory_map->last)
     {
-      s = tmp->size;
-      tmp->size = size;
-      new = (t_memory_chunk *)((size_t)tmp + (HEADER + size));
-      new->size = s - HEADER - size;
-      new->address = (void *)((size_t)new + HEADER);
-      new->_free = TRUE;
-      new->next = tmp->next;
-      new->prev = tmp;
-      tmp->next = new;
-      new->next_freed = tmp->next_freed;
-      new->prev_freed = tmp->prev_freed;
-      if (new->next_freed)
-        	new->next_freed->prev_freed = new;
-      if (new->prev_freed)
-	       new->prev_freed->next_freed = new;
-      if (g_memory_map->last_freed == tmp)
-	       g_memory_map->last_freed = new;
+    g_memory_map->last = _new;
     }
-  return ((void *)((size_t)tmp + HEADER));
+  if (tmp == g_memory_freed->last_freed) 
+    {
+    g_memory_freed->last_freed = _new;
+    }
+  return ((*current)->address);
 }
