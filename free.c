@@ -57,7 +57,7 @@ void                        re_position_break_in_memory()
 
 void                        merge(t_memory_chunk *current)
 {
-  size_t			new_size;
+  size_t			       new_size;
   t_memory_chunk		*left;
   t_memory_chunk		*right;
 

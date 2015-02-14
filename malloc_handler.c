@@ -17,14 +17,14 @@ void				        *split_memory_chunk(t_memory_chunk **current, size_t size)
   t_memory_chunk			*_new;
 
   tmp = *current;
-  printf("tmp :%p\n", tmp);
+  // printf("tmp :%p\n", tmp);
   bckp = tmp->n_size;
-  printf("bckp : %lu\n", bckp);
+  // printf("bckp : %lu\n", bckp);
   tmp->_free = FALSE;
   tmp->size = size;
   _new = (t_memory_chunk *)((void *)tmp->address + size);
   _new->address = (void *)((void *)_new + HEADER);
-  printf("_new->address %p\n", _new->address);
+  // printf("_new->address %p\n", _new->address);
   _new->size = bckp - size;
   _new->_free = TRUE;
   _new->next = tmp->next;

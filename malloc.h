@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:37 2015 THOMAS MILOX
-** Last update Tue Feb 10 11:39:42 2015 Emmanuel Chambon
+** Last update Wed Feb 11 20:38:15 2015 THOMAS MILOX
 */
 
 #ifndef __MALLOC_H__
@@ -20,10 +20,10 @@
 # include <signal.h>
 # include <pthread.h>
 
-# ifndef _X86_64__
-#	define ALIGNMENT 	       	(8)
+# ifndef __X86_64__
+#	define ALIGNMENT 	       	(16)
 # else
-# 	define ALIGNMENT       		(4)
+# 	define ALIGNMENT       		(8)
 # endif
 
 # define HEADER				(sizeof(struct s_memory_chunk))
@@ -52,7 +52,7 @@ typedef struct 				s_memory_chunk
   size_t				map_size;
   size_t				size;
   size_t 				a_size;
-  size_t        n_size;
+  size_t				n_size;
   void 					*address;
   t_bool	 			_free;
 } 				      	t_memory_chunk;

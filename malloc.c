@@ -25,7 +25,7 @@ void					*malloc(size_t size)
 {
   size_t				_size;
 
-  if ((size >> 48 == 1) && ((int64_t)size < 0))
+  if ((size >> 48 >= 1) && ((int64_t)size < 0))
     {
       errno = ENOMEM;
       return NULL;
@@ -61,15 +61,6 @@ void					*init_memory_map(size_t size)
 
 void					*add_new_chunk_memory(size_t size)
 {
-  // t_memory_chunk      *tmp;
-
-  // tmp = g_memory_freed;
-  // while (tmp)
-  // {
-  //   if (tmp->n_size >= (size + HEADER + 8))
-  //     return (split_memory_chunk(&tmp, size));
-  //   tmp = tmp->next_freed;
-  // }
   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     return (resize_memory_map(size));
   return (set_new_chunk_memory(size));
@@ -82,7 +73,7 @@ void 					*set_new_chunk_memory(size_t size)
 
   tmp = g_memory_map->last;
   tmp->next = (t_memory_chunk *)((void *)tmp->address + tmp->size);
-  tmp->next->address = (void *)((void *)tmp->address + (tmp->size + HEADER));
+  tmp->next->address = (void *)(tmp->address + (tmp->size + HEADER));
   tmp->next->size = size;
   tmp->next->_free = FALSE;
   tmp->next->map_size = 0;
