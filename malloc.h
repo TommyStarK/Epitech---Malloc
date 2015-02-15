@@ -28,7 +28,7 @@
 
 # define HEADER				(sizeof(struct s_memory_chunk))
 # define ALIGN(size) 			(((size) + (ALIGNMENT - 1)) &~ (ALIGNMENT - 1))
-# define MAP_SIZE 			ALIGN((ALIGNMENT * sysconf(_SC_PAGESIZE)))
+# define MAP_SIZE 			ALIGN((ALIGNMENT * 10 * sysconf(_SC_PAGESIZE)))
 
 /*
 ** Structures
@@ -81,9 +81,6 @@ void          merge(t_memory_chunk *);
 void 					free(void *);
 
 /*            realloc.c                 */
-void          *resize_end(void * ,size_t);
-void          *create_new_chunk(void *, size_t);
-void          *realloc_in_new_chunk(void *, size_t, t_memory_chunk *);
 void          *realloc(void *, size_t);
 
 /*            calloc.c                  */
@@ -91,5 +88,7 @@ void          *calloc(size_t, size_t);
 
 /*            tools.c                   */
 void          show_alloc_mem();
+void          lock_thread(int);
+void          unlock_thread(int);
 
 #endif /* ! __MALLOC_H__ */

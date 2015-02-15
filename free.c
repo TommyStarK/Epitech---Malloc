@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:24 2015 THOMAS MILOX
-** Last update Wed Feb 11 08:02:46 2015 THOMAS MILOX
+** Last update Sun Feb 15 03:00:39 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
@@ -15,7 +15,7 @@ void                        re_position_break_in_memory()
   t_memory_chunk		*end;
 
   end = g_memory_freed->last_freed;
-  if ((void *)((void *)end->address + end->n_size) ==
+  if ((void *)(end->address + end->n_size) ==
       (void *)((void *)g_memory_map->last + g_memory_map->last->size))
   {
     if (end->prev)
@@ -23,8 +23,8 @@ void                        re_position_break_in_memory()
     g_memory_map->last = (end->prev != NULL ? end->prev : NULL);
     g_memory_freed->last_freed = (end->prev_freed ? end->prev_freed : NULL);
     end->next_freed = NULL;
-    g_memory_freed = (end == g_memory_freed ? NULL : g_memory_freed);
     g_memory_map = (end == g_memory_map ? NULL : g_memory_map);
+    g_memory_freed = (end == g_memory_freed ? NULL : g_memory_freed);
     if (brk(end) == -1)
       return;
   }
@@ -33,7 +33,7 @@ void                        re_position_break_in_memory()
 
 void                        merge(t_memory_chunk *current)
 {
-  size_t			       new_size;
+  size_t			new_size;
   t_memory_chunk		*left;
   t_memory_chunk		*right;
 
@@ -57,6 +57,7 @@ void                        merge(t_memory_chunk *current)
     (right->next_freed)->prev_freed = left;
   else
     g_memory_freed->last_freed = left;
+  re_position_break_in_memory();
 }
 
 
@@ -88,5 +89,4 @@ void                        free(void *ptr)
     g_memory_freed->last_freed = current;
   }
   merge(current);
-  re_position_break_in_memory();
 }

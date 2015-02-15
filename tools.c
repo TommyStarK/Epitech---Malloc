@@ -5,12 +5,15 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Sun Feb 15 00:03:26 2015 THOMAS MILOX
-** Last update Sun Feb 15 00:03:34 2015 THOMAS MILOX
+** Last update Sun Feb 15 03:15:00 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
 
-void                        show_alloc_mem()
+static pthread_mutex_t 		g_mutex_1 = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t 		g_mutex_2 = PTHREAD_MUTEX_INITIALIZER;
+
+void						show_alloc_mem()
 {
   size_t      chunk;
   t_memory_chunk    *tmp;
@@ -21,8 +24,24 @@ void                        show_alloc_mem()
     {
       chunk = (size_t)tmp + HEADER;
       if (!tmp->_free)
-          printf("0x%lX - 0x%lX : %lu bytes\n", chunk,
-            chunk + tmp->size, tmp->size);
+	printf("0x%lX - 0x%lX : %lu bytes\n", chunk,
+	       chunk + tmp->size, tmp->size);
       tmp = tmp->next;
     }
+}
+
+void 						lock_thread(int flag)
+{
+  if (!flag)
+    pthread_mutex_lock(&g_mutex_1);
+  else if (flag == 1)
+    pthread_mutex_lock(&g_mutex_2);
+}
+
+void 						unlock_thread(int flag)
+{
+  if (!flag)
+    pthread_mutex_unlock(&g_mutex_1);
+  else if (flag == 1)
+    pthread_mutex_unlock(&g_mutex_2);
 }

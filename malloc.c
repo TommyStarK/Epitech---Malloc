@@ -61,7 +61,7 @@ void					*init_memory_map(size_t size)
 
 void					*add_new_chunk_memory(size_t size)
 {
-  if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
+   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     return (resize_memory_map(size));
   return (set_new_chunk_memory(size));
 
