@@ -14,14 +14,14 @@ void                        re_position_break_in_memory()
 {
   t_memory_chunk		*end;
 
-  end = g_memory_freed->last_freed;
+  end = g_memory_map->last_freed;
   if ((void *)(end->address + end->n_size) ==
       (void *)((void *)g_memory_map->last + g_memory_map->last->size))
   {
     if (end->prev)
       (end->prev)->next = NULL;
     g_memory_map->last = (end->prev != NULL ? end->prev : NULL);
-    g_memory_freed->last_freed = (end->prev_freed ? end->prev_freed : NULL);
+    g_memory_map->last_freed = (end->prev_freed ? end->prev_freed : NULL);
     end->next_freed = NULL;
     g_memory_map = (end == g_memory_map ? NULL : g_memory_map);
     g_memory_freed = (end == g_memory_freed ? NULL : g_memory_freed);
@@ -56,7 +56,7 @@ void                        merge(t_memory_chunk *current)
   if (right->next_freed)
     (right->next_freed)->prev_freed = left;
   else
-    g_memory_freed->last_freed = left;
+    g_memory_map->last_freed = left;
   re_position_break_in_memory();
   unlock_thread(0);
 }
@@ -77,16 +77,16 @@ void                        free(void *ptr)
   if (!g_memory_freed)
   {
     g_memory_freed = current;
-    g_memory_freed->last_freed = g_memory_freed;
+    g_memory_map->last_freed = g_memory_freed;
     g_memory_freed->next_freed = NULL;
     g_memory_freed->prev_freed = NULL;
   }
   else
   {
-    current->prev_freed = g_memory_freed->last_freed;
+    current->prev_freed = g_memory_map->last_freed;
     current->next_freed = NULL;
     (current->prev_freed)->next_freed = current;
-    g_memory_freed->last_freed = current;
+    g_memory_map->last_freed = current;
   }
   merge(current);
 }

@@ -5,7 +5,7 @@
 ## Login   <loxmi@epitech.net>
 ## 
 ## Started on  Sat Feb  7 21:38:39 2015 THOMAS MILOX
-## Last update Sun Feb 15 00:04:10 2015 THOMAS MILOX
+## Last update Sun Feb 15 20:24:02 2015 THOMAS MILOX
 ##
 
 CC	=	gcc
@@ -17,7 +17,6 @@ NAME	=	libmy_malloc_$(HOSTTYPE).so
 CFLAGS	=	-Wall -Wextra -fPIC
 
 SRC	=	malloc.c		\
-		malloc_handler.c	\
 		realloc.c		\
 		calloc.c		\
 		tools.c			\
