@@ -5,7 +5,7 @@
 ## Login   <loxmi@epitech.net>
 ## 
 ## Started on  Sat Feb  7 21:38:39 2015 THOMAS MILOX
-## Last update Sun Feb 15 20:24:02 2015 THOMAS MILOX
+## Last update Sun Feb 15 20:40:40 2015 Emmanuel Chambon
 ##
 
 CC	=	gcc

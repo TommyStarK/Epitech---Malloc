@@ -1,25 +1,17 @@
 /*
 ** malloc.c for malloc in /home/loxmi/Dropbox/Malloc/v2/PSU_2014_malloc/NEW_MALLOC
-1;2802;0c**
+**
 ** Made by THOMAS MILOX
 ** Login   <loxmi@epitech.net>
-1;2802;0c**
+**
 ** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
-** Last update Wed Feb 11 06:18:45 2015 THOMAS MILOX
+** Last update Sun Feb 15 20:04:19 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
 
-/*
-**
-*/
-
-t_memory_chunk 				*g_memory_map = NULL;
+t_memory_chunk				*g_memory_map = NULL;
 t_memory_chunk				*g_memory_freed = NULL;
-
-/*
-**
-*/
 
 void					*malloc(size_t size)
 {
@@ -66,7 +58,7 @@ void					*init_memory_map(size_t size)
 
 void					*add_new_chunk_memory(size_t size)
 {
-  void        *_new;
+  void					*_new;
 
   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     _new = resize_memory_map(size);
@@ -76,7 +68,7 @@ void					*add_new_chunk_memory(size_t size)
   return (_new);
 }
 
-void 					*set_new_chunk_memory(size_t size)
+void					*set_new_chunk_memory(size_t size)
 {
   t_memory_chunk			*tmp;
 

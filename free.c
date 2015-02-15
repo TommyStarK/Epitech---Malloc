@@ -5,12 +5,12 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:24 2015 THOMAS MILOX
-** Last update Sun Feb 15 03:00:39 2015 THOMAS MILOX
+** Last update Sun Feb 15 20:08:33 2015 Emmanuel Chambon
 */
 
 #include "malloc.h"
 
-void                        re_position_break_in_memory()
+void				re_position_break_in_memory()
 {
   t_memory_chunk		*end;
 
@@ -25,18 +25,15 @@ void                        re_position_break_in_memory()
     end->next_freed = NULL;
     g_memory_map = (end == g_memory_map ? NULL : g_memory_map);
     g_memory_freed = (end == g_memory_freed ? NULL : g_memory_freed);
-    if (brk(end) == -1)
-      return;
+    brk(end);
   }
-  return;
 }
 
-void                        merge(t_memory_chunk *current)
+void				merge(t_memory_chunk *current)
 {
   size_t			new_size;
   t_memory_chunk		*left;
   t_memory_chunk		*right;
-
 
   left = current;
   right = current;
@@ -61,17 +58,16 @@ void                        merge(t_memory_chunk *current)
   unlock_thread(0);
 }
 
-
-void                        free(void *ptr)
+void				free(void *ptr)
 {
   t_memory_chunk		*current;
 
   if (!ptr)
-    return;
+    return ;
   lock_thread(0);
   current = (t_memory_chunk *)((void *)ptr - HEADER);
   if ((size_t)current->address % 8 != 0)
-    return;
+    return ;
   current->_free = (current->_free == TRUE ? raise(SIGABRT) : TRUE);
   current->n_size = current->size;
   if (!g_memory_freed)
