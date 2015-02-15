@@ -30,6 +30,7 @@ void					*malloc(size_t size)
       errno = ENOMEM;
       return NULL;
     }
+  lock_thread(0);
   _size = ALIGN(size);
   if (!g_memory_map)
     return (init_memory_map(_size));
@@ -44,7 +45,10 @@ void					*init_memory_map(size_t size)
   while ((size + HEADER) >= ret)
     ret += MAP_SIZE;
   if ((g_memory_map = (t_memory_chunk *)sbrk(ret)) == (void *)-1)
-    return (NULL);
+    {
+      unlock_thread(0);
+      return (NULL);
+    }
   g_memory_map->address = (void *)((void *)g_memory_map + HEADER);
   g_memory_map->size = size;
   g_memory_map->_free = FALSE;
@@ -56,15 +60,20 @@ void					*init_memory_map(size_t size)
   g_memory_map->next_freed = NULL;
   g_memory_map->prev_freed = NULL;
   g_memory_map->last_freed = NULL;
+  unlock_thread(0);
   return ((void *)((void *)g_memory_map + HEADER));
 }
 
 void					*add_new_chunk_memory(size_t size)
 {
-   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
-    return (resize_memory_map(size));
-  return (set_new_chunk_memory(size));
+  void        *_new;
 
+  if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
+    _new = resize_memory_map(size);
+  else
+    _new = set_new_chunk_memory(size);
+  unlock_thread(0);
+  return (_new);
 }
 
 void 					*set_new_chunk_memory(size_t size)

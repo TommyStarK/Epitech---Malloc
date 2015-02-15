@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:41:37 2015 THOMAS MILOX
-** Last update Wed Feb 11 20:38:15 2015 THOMAS MILOX
+** Last update Sun Feb 15 05:20:56 2015 THOMAS MILOX
 */
 
 #ifndef __MALLOC_H__
@@ -67,7 +67,7 @@ extern t_memory_chunk 			*g_memory_freed;
 ** Prototypes fonctions
 */
 
-/*            malloc.c                  */
+/*				malloc.c                  */
 void 					*resize_memory_map(size_t);
 void 					*split_memory_chunk(t_memory_chunk **, size_t);
 void 					*set_new_chunk_memory(size_t);
@@ -75,20 +75,20 @@ void 					*add_new_chunk_memory(size_t);
 void 					*init_memory_map(size_t);
 void 					*malloc(size_t);
 
-/*            free.c                    */
-void          re_position_break_in_memory();
-void          merge(t_memory_chunk *);
+/*				free.c                    */
+void					re_position_break_in_memory();
+void					merge(t_memory_chunk *);
 void 					free(void *);
 
-/*            realloc.c                 */
-void          *realloc(void *, size_t);
+/*				realloc.c                 */
+void					*realloc(void *, size_t);
 
-/*            calloc.c                  */
-void          *calloc(size_t, size_t);
+/*				calloc.c                  */
+void					*calloc(size_t, size_t);
 
-/*            tools.c                   */
-void          show_alloc_mem();
-void          lock_thread(int);
-void          unlock_thread(int);
+/*				tools.c                   */
+void					show_alloc_mem();
+void					lock_thread(int);
+void					unlock_thread(int);
 
 #endif /* ! __MALLOC_H__ */

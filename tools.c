@@ -10,8 +10,8 @@
 
 #include "malloc.h"
 
-static pthread_mutex_t 		g_mutex_1 = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t 		g_mutex_2 = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t 		g_mutex_m = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t 		g_mutex_r = PTHREAD_MUTEX_INITIALIZER;
 
 void						show_alloc_mem()
 {
@@ -33,15 +33,27 @@ void						show_alloc_mem()
 void 						lock_thread(int flag)
 {
   if (!flag)
-    pthread_mutex_lock(&g_mutex_1);
+    {
+    	if (pthread_mutex_lock(&g_mutex_m))
+    		raise(SIGABRT);
+	}
   else if (flag == 1)
-    pthread_mutex_lock(&g_mutex_2);
+    {
+    	if (pthread_mutex_lock(&g_mutex_r))
+    		raise(SIGABRT);
+    }
 }
 
 void 						unlock_thread(int flag)
 {
   if (!flag)
-    pthread_mutex_unlock(&g_mutex_1);
+    {
+    	if (pthread_mutex_unlock(&g_mutex_m))
+    		raise(SIGABRT);
+    }
   else if (flag == 1)
-    pthread_mutex_unlock(&g_mutex_2);
+    {
+    	if (pthread_mutex_unlock(&g_mutex_r))
+    		raise(SIGABRT);
+    }
 }

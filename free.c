@@ -58,6 +58,7 @@ void                        merge(t_memory_chunk *current)
   else
     g_memory_freed->last_freed = left;
   re_position_break_in_memory();
+  unlock_thread(0);
 }
 
 
@@ -67,12 +68,11 @@ void                        free(void *ptr)
 
   if (!ptr)
     return;
+  lock_thread(0);
   current = (t_memory_chunk *)((void *)ptr - HEADER);
   if ((size_t)current->address % 8 != 0)
     return;
-  if (current->_free == TRUE)
-    raise(SIGABRT);
-  current->_free = TRUE;
+  current->_free = (current->_free == TRUE ? raise(SIGABRT) : TRUE);
   current->n_size = current->size;
   if (!g_memory_freed)
   {
