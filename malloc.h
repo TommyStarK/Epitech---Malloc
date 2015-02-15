@@ -54,7 +54,7 @@ typedef struct 				s_memory_chunk
   size_t 				a_size;
   size_t				n_size;
   void 					*address;
-  t_bool	 			_free;
+  t_bool        _free;
 } 				      	t_memory_chunk;
 
 /*
@@ -74,9 +74,22 @@ void 					*set_new_chunk_memory(size_t);
 void 					*add_new_chunk_memory(size_t);
 void 					*init_memory_map(size_t);
 void 					*malloc(size_t);
+
 /*            free.c                    */
-void 					show_alloc_mem();
-void 					bring_back_break();
+void          re_position_break_in_memory();
+void          merge(t_memory_chunk *);
 void 					free(void *);
+
+/*            realloc.c                 */
+void          *resize_end(void * ,size_t);
+void          *create_new_chunk(void *, size_t);
+void          *realloc_in_new_chunk(void *, size_t, t_memory_chunk *);
+void          *realloc(void *, size_t);
+
+/*            calloc.c                  */
+void          *calloc(size_t, size_t);
+
+/*            tools.c                   */
+void          show_alloc_mem();
 
 #endif /* ! __MALLOC_H__ */

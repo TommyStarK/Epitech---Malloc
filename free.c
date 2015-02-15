@@ -10,30 +10,6 @@
 
 #include "malloc.h"
 
-void                        show_alloc_mem()
-{
-  size_t			chunk;
-  t_memory_chunk		*tmp;
-  t_memory_chunk		*_free;
-
-  tmp = g_memory_map;
-  _free = g_memory_freed;
-  printf("break : 0x%lX\n", (size_t) sbrk(0));
-  while (tmp)
-    {
-      chunk = (size_t)tmp + HEADER;
-      if (!tmp->_free)
-          printf("0x%lX - 0x%lX : %lu bytes\n", chunk,
-            chunk + tmp->size, tmp->size);
-      tmp = tmp->next;
-    }
-  while (_free)
-    {
-      printf("%p  - - %lu\n", _free, _free->n_size);
-      _free = _free->next_freed;
-    }
-}
-
 void                        re_position_break_in_memory()
 {
   t_memory_chunk		*end;

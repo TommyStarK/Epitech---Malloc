@@ -5,7 +5,7 @@
 ## Login   <loxmi@epitech.net>
 ## 
 ## Started on  Sat Feb  7 21:38:39 2015 THOMAS MILOX
-## Last update Sun Feb  8 11:19:03 2015 Emmanuel Chambon
+## Last update Sun Feb 15 00:04:10 2015 THOMAS MILOX
 ##
 
 CC	=	gcc
@@ -20,6 +20,7 @@ SRC	=	malloc.c		\
 		malloc_handler.c	\
 		realloc.c		\
 		calloc.c		\
+		tools.c			\
 		free.c 		
 
 OBJ	=	$(SRC:.c=.o)
