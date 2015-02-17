@@ -37,8 +37,8 @@ void				merge(t_memory_chunk *current)
 
   left = current;
   right = current;
-  new_size = (current->n_size + HEADER);
-   if (current->prev && current->prev->_free == TRUE)
+  new_size = current->n_size;
+  if (current->prev && current->prev->_free == TRUE)
   {
     left = left->prev;
     new_size += (left->n_size + HEADER);
@@ -48,12 +48,10 @@ void				merge(t_memory_chunk *current)
     right = right->next;
     new_size += (right->n_size + HEADER);
   }
-  left->n_size = (new_size - HEADER);
+  left->n_size = new_size;
   left->next_freed = right->next_freed;
   if (right->next_freed)
-    (right->next_freed)->prev_freed = left;
-  else
-    g_memory_map->last_freed = left;
+    right->next_freed->prev_freed = right;
   re_position_break_in_memory();
   unlock_thread(0);
 }
@@ -76,13 +74,6 @@ void				free(void *ptr)
     g_memory_map->last_freed = g_memory_freed;
     g_memory_freed->next_freed = NULL;
     g_memory_freed->prev_freed = NULL;
-  }
-  else
-  {
-    current->prev_freed = g_memory_map->last_freed;
-    current->next_freed = NULL;
-    (current->prev_freed)->next_freed = current;
-    g_memory_map->last_freed = current;
   }
   merge(current);
 }

@@ -59,7 +59,11 @@ void					*init_memory_map(size_t size)
 void					*add_new_chunk_memory(size_t size)
 {
   void					*_new;
+  t_memory_chunk *tmp;
 
+  tmp = g_memory_freed;
+  while (tmp && tmp->next_freed)
+    tmp = tmp->next_freed;
   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     _new = resize_memory_map(size);
   else

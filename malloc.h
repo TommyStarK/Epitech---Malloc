@@ -68,7 +68,7 @@ extern t_memory_chunk			*g_memory_freed;
 */
 
 void					*resize_memory_map(size_t);
-void					*split_memory_chunk(t_memory_chunk **, size_t);
+void					split_memory_chunk(t_memory_chunk *, size_t);
 void					*set_new_chunk_memory(size_t);
 void					*add_new_chunk_memory(size_t);
 void					*init_memory_map(size_t);
