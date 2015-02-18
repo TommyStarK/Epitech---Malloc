@@ -5,7 +5,7 @@
 ** Login   <loxmi@epitech.net>
 **
 ** Started on  Thu Feb  5 14:42:14 2015 THOMAS MILOX
-** Last update Sun Feb 15 20:04:19 2015 Emmanuel Chambon
+** Last update Wed Feb 18 16:50:48 2015 THOMAS MILOX
 */
 
 #include "malloc.h"
@@ -59,11 +59,7 @@ void					*init_memory_map(size_t size)
 void					*add_new_chunk_memory(size_t size)
 {
   void					*_new;
-  t_memory_chunk *tmp;
 
-  tmp = g_memory_freed;
-  while (tmp && tmp->next_freed)
-    tmp = tmp->next_freed;
   if ((g_memory_map->a_size + size + HEADER) >= g_memory_map->map_size)
     _new = resize_memory_map(size);
   else
